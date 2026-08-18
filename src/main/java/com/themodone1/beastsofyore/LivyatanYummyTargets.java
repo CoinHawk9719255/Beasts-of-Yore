@@ -4,6 +4,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.phys.AABB;
 
 import java.util.EnumSet;
@@ -35,7 +36,8 @@ public class LivyatanYummyTargets extends TargetGoal {
         if (found == null) {
             return false;
         }
-//System.out.println("Setting target: " + found);
+
+
         this.livyatan.setTarget(found);
       
         return false;
@@ -45,6 +47,19 @@ public class LivyatanYummyTargets extends TargetGoal {
         AABB searchBox = this.livyatan.getBoundingBox().inflate(this.range);
 
         for (Class<?> type : priorityOrder) {
+
+            if (type == Boat.class) {
+                    List<Boat> boats = this.livyatan.level().getEntitiesOfClass(Boat.class, searchBox, b -> b.isAlive() && this.livyatan.getSensing().hasLineOfSight(b));
+
+                if (boats.isEmpty() == false) {
+                    this.livyatan.setBoatTarget(boats.get(0));
+                    return null;
+                }
+                continue;
+            }
+
+
+
             if (!LivingEntity.class.isAssignableFrom(type)) {
                 continue;
             }
@@ -58,7 +73,7 @@ public class LivyatanYummyTargets extends TargetGoal {
                     e -> isValidCandidate(e)
             );
 
-            //System.out.println("Checking " + type.getSimpleName() + " — found: " + candidates.size());
+
 
             if (!candidates.isEmpty()) {
                 return this.livyatan.getTarget() != null && candidates.contains(this.livyatan.getTarget())
@@ -66,7 +81,7 @@ public class LivyatanYummyTargets extends TargetGoal {
                         : candidates.get(0);
             }
         }
-        //System.out.println("No valid target found in range " + this.range);
+
         return null;
     }
 

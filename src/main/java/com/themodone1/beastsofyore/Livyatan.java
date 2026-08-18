@@ -47,7 +47,7 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
 
 
     int timeToFull20Ticks = 0;
-    private static final Class<?>[] yummy_targets_all = { Player.class,  Boat.class, Turtle.class,Dolphin.class, Nautilus.class, Squid.class, GlowSquid.class, Drowned.class, Cod.class, TropicalFish.class, Salmon.class };
+    private static final Class<?>[] yummy_targets_all = { Player.class,  Boat.class, Turtle.class,Dolphin.class, Nautilus.class, Squid.class, GlowSquid.class, Cod.class, TropicalFish.class, Salmon.class, Drowned.class };
 
     @Override
     protected void handleAirSupply(ServerLevel level, int preTickAirSupply) {
@@ -109,15 +109,15 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
     @Override
     protected void registerGoals() {
         this.targetSelector.addGoal(1, new LivyatanYummyTargets(this, yummy_targets_all, 124.0D));
-        this.goalSelector.addGoal(1, new LivyatanAttackGoal(this, 1.0));
+        this.goalSelector.addGoal(1, new LivyatanAttackGoal(this, 1.7));
         this.goalSelector.addGoal(5, new RandomSwimmingGoal(this, 1.0, 40));
     }
     public static AttributeSupplier.Builder createAttributes()
     {
         return Mob.createMobAttributes()
-                .add(Attributes.ATTACK_DAMAGE, 30.0)
+                .add(Attributes.ATTACK_DAMAGE, 35.0)
                 .add(Attributes.ATTACK_KNOCKBACK, 5.5f)
-                .add(Attributes.MOVEMENT_SPEED, 1.0)
+                .add(Attributes.MOVEMENT_SPEED, 1.2)
                 .add(Attributes.FOLLOW_RANGE, 124.0)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 100.0D)
                 .add(Attributes.MAX_HEALTH, 300.0)
