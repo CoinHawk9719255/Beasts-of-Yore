@@ -1,6 +1,40 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
+		"underthere": {
+			"animation_length": 2,
+			"bones": {
+				"bone11": {
+					"rotation": {
+						"0.0": {
+							"vector": [-90, 0, 0],
+							"easing": "easeInOutBack"
+						},
+						"2.0": {
+							"vector": [0, 0, 0],
+							"easing": "easeOutElastic"
+						}
+					}
+				}
+			}
+		},
+		"underwhere": {
+			"loop": "hold_on_last_frame",
+			"animation_length": 2,
+			"bones": {
+				"bone11": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"2.0": {
+							"vector": [-90, 0, 0],
+							"easing": "easeOutElastic"
+						}
+					}
+				}
+			}
+		},
 		"bite": {
 			"animation_length": 3,
 			"bones": {
