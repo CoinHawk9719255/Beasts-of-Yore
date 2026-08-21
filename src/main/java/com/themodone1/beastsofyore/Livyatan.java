@@ -41,9 +41,20 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.level.Level;
 
+//import static com.themodone1.beastsofyore.LivyatanBoatAttack.breachTimer;
+//import static com.themodone1.beastsofyore.LivyatanBoatAttack.hasStruken;
 import static java.lang.IO.print;
 
 public class Livyatan extends WaterAnimal implements GeoEntity {
+
+    private int breachTimer = 0;
+    private boolean hasStruken = false;
+
+    public void setBreachTimer(int t) {
+    this.breachTimer = t;
+    }
+    public void setHasStruken(boolean v) { this.hasStruken = v; }
+    public boolean hasStruken() { return hasStruken; }
 
 
     int timeToFull20Ticks = 0;
@@ -84,7 +95,14 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
         controllers.add(new AnimationController<Livyatan>("movement", 0, this::movementController));
         controllers.add(new AnimationController<Livyatan>("attack", 0, state -> PlayState.STOP)
                 .triggerableAnim("bite", RawAnimation.begin().thenPlay("bite")));
+        controllers.add(new AnimationController<Livyatan>("breach", 0, state -> PlayState.STOP)
+                .triggerableAnim("underwhere", RawAnimation.begin().thenPlayAndHold("underwhere"))
+                .triggerableAnim("underthere", RawAnimation.begin().thenPlay("underthere")));
+
+
+
     }
+
 
     private <E extends Livyatan> PlayState movementController(AnimationTest<E> state) {
         if (state.isMoving()) {
@@ -148,6 +166,12 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
             timeToFull20Ticks = 0;
 
         }
+        //System.out.println("strueken MY MAN IM GOING INSANE "+hasStruken);
+
+//        if (!isInWater()) {
+//            hasStruken = true;
+//
+//        }
 
     }
 
@@ -158,6 +182,17 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
         super.aiStep();
         if (this.getTarget() != null) {
             rotateTowardsTarget(this.getTarget());
+        }
+        //ANIMATION STOPPER GOD DAMN I HOPE I REMEMBER WHAT I TYPED IT SO I CAN SEARCH FOR IT LATER
+        System.out.println("has struken for reset"+ hasStruken);
+        System.out.println("breach timerr"+breachTimer);
+        if (hasStruken) {
+            breachTimer--;
+            if (breachTimer <= 0) {
+                hasStruken = false;
+                triggerAnim("breach", "underthere");
+                System.out.println("Resetted");
+            }
         }
     }
     private void rotateTowardsTarget(LivingEntity target) {

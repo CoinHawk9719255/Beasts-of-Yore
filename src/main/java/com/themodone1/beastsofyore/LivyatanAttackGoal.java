@@ -22,6 +22,7 @@ import java.util.EnumSet;
 import static java.lang.IO.print;
 
 public class LivyatanAttackGoal extends Goal {
+    private LivyatanBoatAttack boatAttack;
     private int timeSinceLastAttackAnimation = 0;
     private final Livyatan livyatan;
     private final double swimSpeed;
@@ -53,12 +54,17 @@ public class LivyatanAttackGoal extends Goal {
 
         LivingEntity target = this.livyatan.getTarget();
         Boat boat = this.livyatan.getBoatTarget();
-        if (target == null && boat != null) {
 
+        if (target == null && boat != null) {
+            if (boatAttack == null) {
+                boatAttack = new LivyatanBoatAttack(this.livyatan, this.swimSpeed);
+            }
+            boatAttack.tick(boat);
             return;
         }
 
         if (target == null) {
+            if (boatAttack != null) boatAttack.reset();
             return;
         }
 
@@ -118,7 +124,9 @@ public class LivyatanAttackGoal extends Goal {
             this.livyatan.setDeltaMovement(vel.x * 0.8D, vel.y, vel.z * 0.8D);
         }
 
-
+        if (this.livyatan.horizontalCollision && this.livyatan.isInWater()) {
+            this.livyatan.setDeltaMovement(this.livyatan.getDeltaMovement().add(0, 0.1D, 0));
+        }
 
         if (animationDoneAndCanBite == true){
             attackAnimationTime--;
@@ -169,7 +177,7 @@ public class LivyatanAttackGoal extends Goal {
         return reach * reach;
     }
     private double getAttackAnimationStartDistance(LivingEntity target) {
-        double Animreach = 14.5 + target.getBbWidth() + 2.0D;
+        double Animreach = 15.5 + target.getBbWidth() + 2.0D;
         return Animreach * Animreach;
     }
 
@@ -181,11 +189,11 @@ public class LivyatanAttackGoal extends Goal {
 
     @Override
     public boolean requiresUpdateEveryTick() {
-        LivingEntity target = this.livyatan.getTarget();
-        Boat boat = this.livyatan.getBoatTarget();
-        if (this.livyatan.tickCount % 5 == 0) {
-            System.out.println("target=" + target + " boat=" + boat);
-        }
+//        LivingEntity target = this.livyatan.getTarget();
+//        Boat boat = this.livyatan.getBoatTarget();
+////        if (this.livyatan.tickCount % 5 == 0) {
+////            System.out.println("target=" + target + " boat=" + boat);
+////        }
         return true;
     }
 }
