@@ -14,7 +14,7 @@ public class LivyatanBoatAttack {
     private static final float MAX_TURN_PER_TICK = 3.5F;
     private static final double MAX_SPEED = 0.8D;
     private static final int WAIT_DURATION = 22;
-    private static final int BREACH_DURATION = 40;
+    private static final int BREACH_DURATION = 20;
     //public static int breachTimer = 0;
     private final Livyatan livyatan;
     private final double swimSpeed;
@@ -79,11 +79,11 @@ public class LivyatanBoatAttack {
 //                }
 
                 // System.out.println("Yo mate brached water = " + breachedWater);
-               // breachedWater = false;
-               // if (breachedWater == true && this.livyatan.isInWater()) {
-                   // breachedWater = false;
+                // breachedWater = false;
+                // if (breachedWater == true && this.livyatan.isInWater()) {
+                // breachedWater = false;
 
-              //  }
+                //  }
                 if (approachTarget == null || boatDriftedTooFar(boat)) {
                     approachTarget = findApproachPosition(boat.position());
                     boatPosWhenApproachSet = boat.position();
@@ -94,10 +94,10 @@ public class LivyatanBoatAttack {
 
                 double distSq = this.livyatan.position().distanceToSqr(targetPos);
                 if (distSq <= 10.0D) {
-                    if (this.livyatan.hasStruken() == false) {
-                        System.out.println("MAN I AM GOING INSANE");
+                   if (this.livyatan.hasStruken() == false) {
+                       // System.out.println("MAN I AM GOING INSANE");
                         this.livyatan.triggerAnim("breach", "underwhere");
-                    }
+                   }
                     boatPhase = BoatPhase.WAIT;
                     waitTimer = WAIT_DURATION;
                 }
@@ -106,7 +106,7 @@ public class LivyatanBoatAttack {
                 steerToward(boat.position(), false);
 
 
-               // this.livyatan.triggerAnim("underwhere","underwhere");
+                // this.livyatan.triggerAnim("underwhere","underwhere");
                 waitTimer--;
                 if (waitTimer <= 0) {
                     boatPhase = BoatPhase.STRIKE;
@@ -125,7 +125,7 @@ public class LivyatanBoatAttack {
 
     private boolean boatDriftedTooFar(Boat boat) {
         if (boatPosWhenApproachSet == null) return false;
-        return boat.position().distanceToSqr(boatPosWhenApproachSet) > 64.0D; // 8 blocks ish max limit
+        return boat.position().distanceToSqr(boatPosWhenApproachSet) > 64.0D; // 8 blocks ish
     }
 
     private double lastBoatX = Double.NaN;
@@ -136,9 +136,10 @@ public class LivyatanBoatAttack {
         if (Double.isNaN(lastBoatX)) {
             // first call baseline make sure to calculate properly
 
+
             lastBoatX = boat.getX();
             lastBoatZ = boat.getZ();
-            boatStillTicks = 30; // just settled? moving?
+            boatStillTicks = 30; // treat as "just settled," not "moving"
             return false;
         }
 
@@ -160,21 +161,20 @@ public class LivyatanBoatAttack {
         Vec3 boatPos = boat.position();
 
         if (boatBiteQueued) {
-            // bit windup rise and strike
+            //bit windup rise and strike
+
             double dyStrike = boatPos.y - this.livyatan.getY();
-            double vertical = Mth.clamp(dyStrike / 0.2D, 0.1D, Math.abs((boat.getY() - this.livyatan.getY())/2));
+            double vertical = Mth.clamp(dyStrike / 0.2D, 0.1D, ((2+Math.abs((boat.getY() - this.livyatan.getY())) / 4)));
 
-
+            this.livyatan.setDeltaMovement(this.livyatan.getDeltaMovement().x, vertical, this.livyatan.getDeltaMovement().z);
+            steerToward(boatPos, false); // now runs every windup tick, tracking the moving boat
+            this.livyatan.triggerAnim("breach", "underwhere");
             boatBiteWindup--;
-            if (boatBiteWindup <= 0) {
-                this.livyatan.setDeltaMovement(this.livyatan.getDeltaMovement().x, vertical, this.livyatan.getDeltaMovement().z);
-                steerToward(boatPos, false);
-                this.livyatan.setBreachTimer(BREACH_DURATION);
+            if (boatBiteWindup <= 15) {
                 double currentDistSq = this.livyatan.position().distanceToSqr(boat.position());
-                if (currentDistSq <= 150.0D) {
-                    breakBoat(boat);
-
-                }
+                resolveStrike(boat, currentDistSq <= 150.0D);
+            }
+            if (boatBiteWindup <= 0) {
                 reset();
             }
             return;
@@ -187,38 +187,39 @@ public class LivyatanBoatAttack {
 
         double dx = boatPos.x - this.livyatan.getX();
         double dz = boatPos.z - this.livyatan.getZ();
-        double horizontalDistSq = dx * dx + dz * dz; // horizontal distance strike
+        double horizontalDistSq = dx * dx + dz * dz;
 
-        if (horizontalDistSq <= 10.0D) { // ~idk anymore changed it so much blocks horizontally under the boat
-            boatBiteQueued = true;
-            boatBiteWindup = 22;
-            this.livyatan.triggerAnim("attack", "bite");
+        if (horizontalDistSq <= 10.0D) {    // ~idk anymore changed it so much blocks horizontally under the boat
+            queueBite();
         }
     }
     private void strikeBoat(Boat boat) {
-       // this.livyatan.triggerAnim("underwhere","underwhere");
+        // this.livyatan.triggerAnim("underwhere","underwhere");
         double dy = Math.abs(boat.getY() - this.livyatan.getY());
-        double vertical = Mth.clamp(dy / 0.2D, 0.1D, Math.abs((boat.getY() - this.livyatan.getY())/2));
+        double vertical = Mth.clamp(dy / 0.2D, 0.1D, ((2+Math.abs((boat.getY() - this.livyatan.getY())) / 4)));
         this.livyatan.setDeltaMovement(this.livyatan.getDeltaMovement().x, vertical, this.livyatan.getDeltaMovement().z);
         steerToward(boat.position(), false);
         double distanceVertically = Math.abs(boat.getY() - this.livyatan.getY());
-        boatBiteWindup--;System.out.println("distance vertically "+distanceVertically);
+        boatBiteWindup--;
+        //System.out.println("distance vertically "+distanceVertically);
 
         if(boatBiteWindup <= 15) {
-            breakBoat(boat);
-            this.livyatan.setBreachTimer(BREACH_DURATION);
-            System.out.println("breaking boat at distance"+distanceVertically);
-            this.livyatan.setHasStruken(true);
+            resolveStrike(boat,true);
+
+           // breakBoat(boat);
+            //this.livyatan.setBreachTimer(BREACH_DURATION);
+            //System.out.println("breaking boat at distance"+distanceVertically);
+            //this.livyatan.setHasStruken(true);
 
         }
         if (boatBiteWindup <= 0) {
 
 
-            if (distanceVertically <= 20.0D) {
-                this.livyatan.setHasStruken(true);
+           // if (distanceVertically <= 20.0D) {
+            //    this.livyatan.setHasStruken(true);
 
 
-            }
+           // }
             reset();
         }
 
@@ -307,6 +308,27 @@ public class LivyatanBoatAttack {
         boat.ejectPassengers();
         boat.hurt(boat.damageSources().generic(), 5000.0f);
     }
+    private void queueBite() {
+        if (this.livyatan.hasStruken() == false) {
+            this.livyatan.triggerAnim("breach", "underwhere");
+        }
+        boatBiteQueued = true;
+        boatBiteWindup = 22;
+        this.livyatan.triggerAnim("attack", "bite");
+    }
+    // when strike resolvess hit mis
+// breach animation hopefully controlled byu ai astep dont forget and mess it up again
+    private boolean strikeResolved = false;
+
+    private void resolveStrike(Boat boat, boolean hit) {
+        if (strikeResolved) return; // guard against repeated calls in the same windup
+        strikeResolved = true;
+        if (hit) {
+            breakBoat(boat);
+        }
+        this.livyatan.setBreachTimer(BREACH_DURATION);
+        this.livyatan.setHasStruken(true);
+    }
 
 
     public void reset() {
@@ -319,5 +341,6 @@ public class LivyatanBoatAttack {
         lastBoatX = Double.NaN;
         lastBoatZ = Double.NaN;
         boatStillTicks = 0;
+        strikeResolved = false;
     }
 }

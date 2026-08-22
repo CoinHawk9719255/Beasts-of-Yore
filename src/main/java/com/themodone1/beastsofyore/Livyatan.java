@@ -51,7 +51,7 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
     private boolean hasStruken = false;
 
     public void setBreachTimer(int t) {
-    this.breachTimer = t;
+        this.breachTimer = t;
     }
     public void setHasStruken(boolean v) { this.hasStruken = v; }
     public boolean hasStruken() { return hasStruken; }
@@ -75,6 +75,8 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
     }
 
     private Boat boatTarget;
+    private boolean oneBefore = true;
+    private boolean oneAfter =true;
 
     public Boat getBoatTarget() {
         return boatTarget;
@@ -161,19 +163,18 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
     public void tick() {
 
         super.tick();
-        timeToFull20Ticks++;
-        if (timeToFull20Ticks >= 20){
-            timeToFull20Ticks = 0;
-
-        }
+        oneAfter = isInWater();
+        WaterCrash crash_event = new WaterCrash(oneAfter, oneBefore, getX(),getY(),getZ());
         //System.out.println("strueken MY MAN IM GOING INSANE "+hasStruken);
-
+        crash_event.update(level());
+        oneBefore = isInWater();
 //        if (!isInWater()) {
 //            hasStruken = true;
 //
 //        }
 
     }
+
 
     private static final float  maxTurnPerTickForLivyatanMaybe_I_ShouldMakeTheseVariableNamesLessFlipFloppity = 2.5F;
 
@@ -184,14 +185,14 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
             rotateTowardsTarget(this.getTarget());
         }
         //ANIMATION STOPPER GOD DAMN I HOPE I REMEMBER WHAT I TYPED IT SO I CAN SEARCH FOR IT LATER
-        System.out.println("has struken for reset"+ hasStruken);
-        System.out.println("breach timerr"+breachTimer);
+        //System.out.println("has struken for reset"+ hasStruken);
+       // System.out.println("breach timerr"+breachTimer);
         if (hasStruken) {
             breachTimer--;
             if (breachTimer <= 0) {
                 hasStruken = false;
-                triggerAnim("breach", "underthere");
-                System.out.println("Resetted");
+                triggerAnim("breach", "underthere"); // was stopTriggeredAnim("underwhere","underwhere")
+               // System.out.println("Resetted");
             }
         }
     }
