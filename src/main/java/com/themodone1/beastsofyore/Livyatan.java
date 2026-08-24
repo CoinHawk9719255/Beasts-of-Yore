@@ -60,6 +60,7 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
     int timeToFull20Ticks = 0;
     private static final Class<?>[] yummy_targets_all = { Player.class,  Boat.class, Turtle.class,Dolphin.class, Nautilus.class, Squid.class, GlowSquid.class, Cod.class, TropicalFish.class, Salmon.class, Drowned.class };
 
+
     @Override
     protected void handleAirSupply(ServerLevel level, int preTickAirSupply) {
         if (this.isAlive() && !this.isInWater()) {
