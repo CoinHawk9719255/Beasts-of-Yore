@@ -38,6 +38,7 @@ import net.minecraft.world.entity.animal.turtle.Turtle;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.zombie.Drowned;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.level.Level;
 
@@ -49,16 +50,17 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
 
     private int breachTimer = 0;
     private boolean hasStruken = false;
-
+    //public boolean hasAttemptedToUnderwhere = false;
     public void setBreachTimer(int t) {
         this.breachTimer = t;
     }
     public void setHasStruken(boolean v) { this.hasStruken = v; }
     public boolean hasStruken() { return hasStruken; }
+    //public boolean hasAttemptedToUnderwhere() { return hasAttemptedToUnderwhere; }
 
 
     int timeToFull20Ticks = 0;
-    private static final Class<?>[] yummy_targets_all = { Player.class,  Boat.class, Turtle.class,Dolphin.class, Nautilus.class, Squid.class, GlowSquid.class, Cod.class, TropicalFish.class, Salmon.class, Drowned.class };
+    private static final Class<?>[] yummy_targets_all = { Player.class,  AbstractBoat.class, Turtle.class,Dolphin.class, Nautilus.class, Squid.class, GlowSquid.class, Cod.class, TropicalFish.class, Salmon.class, Drowned.class };
 
 
     @Override
@@ -75,15 +77,15 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
 
     }
 
-    private Boat boatTarget;
+    private AbstractBoat boatTarget;
     private boolean oneBefore = true;
     private boolean oneAfter =true;
 
-    public Boat getBoatTarget() {
+    public AbstractBoat getBoatTarget() {
         return boatTarget;
     }
 
-    public void setBoatTarget(Boat boat) {
+    public void setBoatTarget(AbstractBoat boat) {
         this.boatTarget = boat;
     }
 

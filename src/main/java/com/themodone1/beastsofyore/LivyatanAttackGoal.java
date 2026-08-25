@@ -10,15 +10,16 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.vehicle.boat.*;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.effects.ApplyMobEffect;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.neoforged.fml.startup.Server;
 
 import java.util.EnumSet;
 
+import com.themodone1.beastsofyore.Livyatan.*;
 import static java.lang.IO.print;
 
 public class LivyatanAttackGoal extends Goal {
@@ -53,7 +54,7 @@ public class LivyatanAttackGoal extends Goal {
 
 
         LivingEntity target = this.livyatan.getTarget();
-        Boat boat = this.livyatan.getBoatTarget();
+        AbstractBoat boat = this.livyatan.getBoatTarget();
 
         if (target == null && boat != null) {
             if (boatAttack == null) {
@@ -67,6 +68,7 @@ public class LivyatanAttackGoal extends Goal {
             if (boatAttack != null) boatAttack.reset();
             return;
         }
+       // System.out.println("has attempted to underhwere? haha you said underwhere, SHUT THE FUCK UP " + hasAttemptedToUnderwhere);
 
 
         if (!target.isInWater()) {
@@ -109,7 +111,12 @@ public class LivyatanAttackGoal extends Goal {
 
 
 
-
+       // this.livyatan.triggerAnim("breach", "underthere");
+//        if (hasAttemptedToUnderwhere){
+//            this.livyatan.triggerAnim("breach", "underthere");
+//            System.out.println("hold up something seems wrong");
+//            this.livyatan.hasStruken();
+//        }
         if (facingCloseEnough && distSq > 4.0D && this.livyatan.isInWater() && target.isInWater()) {
             Vec3 forward = Vec3.directionFromRotation(this.livyatan.getXRot(), this.livyatan.getYRot());
             Vec3 movement = forward.scale(this.swimSpeed  * 0.05D);

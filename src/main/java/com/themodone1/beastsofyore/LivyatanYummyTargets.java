@@ -4,6 +4,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.phys.AABB;
 
@@ -48,8 +49,8 @@ public class LivyatanYummyTargets extends TargetGoal {
 
         for (Class<?> type : priorityOrder) {
 
-            if (type == Boat.class) {
-                    List<Boat> boats = this.livyatan.level().getEntitiesOfClass(Boat.class, searchBox, b -> b.isAlive() && this.livyatan.getSensing().hasLineOfSight(b));
+            if (type == AbstractBoat.class) {
+                    List<AbstractBoat> boats = this.livyatan.level().getEntitiesOfClass(AbstractBoat.class, searchBox, b -> b.isAlive() && this.livyatan.getSensing().hasLineOfSight(b));
 
                 if (boats.isEmpty() == false) {
                     this.livyatan.setBoatTarget(boats.get(0));

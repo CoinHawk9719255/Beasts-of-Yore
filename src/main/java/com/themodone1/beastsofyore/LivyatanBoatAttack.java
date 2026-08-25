@@ -5,7 +5,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.entity.vehicle.boat.Boat;
+import net.minecraft.world.entity.vehicle.boat.Raft;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -15,6 +17,7 @@ public class LivyatanBoatAttack {
     private static final double MAX_SPEED = 0.8D;
     private static final int WAIT_DURATION = 22;
     private static final int BREACH_DURATION = 20;
+
     //public static int breachTimer = 0;
     private final Livyatan livyatan;
     private final double swimSpeed;
@@ -29,7 +32,7 @@ public class LivyatanBoatAttack {
     private int boatBiteWindup = 0;
     private static boolean breachedWater = false;
     //public static boolean hasStruken = false;
-
+    private boolean hasAttemptedToUnderwhere = false;
 
 
     public LivyatanBoatAttack(Livyatan livyatan, double swimSpeed) {
@@ -37,8 +40,12 @@ public class LivyatanBoatAttack {
         this.swimSpeed = swimSpeed;
     }
 
-    public void tick(Boat boat) {
+    public void tick(AbstractBoat boat) {
         if (!boat.isAlive()) {
+            if (hasAttemptedToUnderwhere && !this.livyatan.hasStruken()) {
+                this.livyatan.triggerAnim("breach", "underthere");
+                hasAttemptedToUnderwhere = false;
+            }
             reset();
             this.livyatan.setBoatTarget(null);
             return;
@@ -97,6 +104,8 @@ public class LivyatanBoatAttack {
                    if (this.livyatan.hasStruken() == false) {
                        // System.out.println("MAN I AM GOING INSANE");
                         this.livyatan.triggerAnim("breach", "underwhere");
+                        hasAttemptedToUnderwhere = true;
+                       // hasAttemptedToUnderwhere = true;
                    }
                     boatPhase = BoatPhase.WAIT;
                     waitTimer = WAIT_DURATION;
@@ -123,7 +132,7 @@ public class LivyatanBoatAttack {
         }
     }
 
-    private boolean boatDriftedTooFar(Boat boat) {
+    private boolean boatDriftedTooFar(AbstractBoat boat) {
         if (boatPosWhenApproachSet == null) return false;
         return boat.position().distanceToSqr(boatPosWhenApproachSet) > 64.0D; // 8 blocks ish
     }
@@ -132,7 +141,7 @@ public class LivyatanBoatAttack {
     private double lastBoatZ = Double.NaN;
     private int boatStillTicks = 0;
 
-    private boolean isBoatMoving(Boat boat) {
+    private boolean isBoatMoving(AbstractBoat boat) {
         if (Double.isNaN(lastBoatX)) {
             // first call baseline make sure to calculate properly
 
@@ -157,7 +166,7 @@ public class LivyatanBoatAttack {
         return boatStillTicks < 30;
     }
 
-    private void directChaseAndStrike(Boat boat) {
+    private void directChaseAndStrike(AbstractBoat boat) {
         Vec3 boatPos = boat.position();
 
         if (boatBiteQueued) {
@@ -193,7 +202,7 @@ public class LivyatanBoatAttack {
             queueBite();
         }
     }
-    private void strikeBoat(Boat boat) {
+    private void strikeBoat(AbstractBoat boat) {
         // this.livyatan.triggerAnim("underwhere","underwhere");
         double dy = Math.abs(boat.getY() - this.livyatan.getY());
         double vertical = Mth.clamp(dy / 0.2D, 0.1D, ((2+Math.abs((boat.getY() - this.livyatan.getY())) / 4)));
@@ -301,7 +310,7 @@ public class LivyatanBoatAttack {
         return lastValid;
     }
 
-    private void breakBoat(Boat boat) {
+    private void breakBoat(AbstractBoat boat) {
         //this.livyatan.stopTriggeredAnim("underwhere","underwhere");
         //this.livyatan.triggerAnim("underthere","underthere");
         this.livyatan.swing(InteractionHand.MAIN_HAND);
@@ -311,6 +320,7 @@ public class LivyatanBoatAttack {
     private void queueBite() {
         if (this.livyatan.hasStruken() == false) {
             this.livyatan.triggerAnim("breach", "underwhere");
+            hasAttemptedToUnderwhere = true;
         }
         boatBiteQueued = true;
         boatBiteWindup = 22;
@@ -320,7 +330,7 @@ public class LivyatanBoatAttack {
 // breach animation hopefully controlled byu ai astep dont forget and mess it up again
     private boolean strikeResolved = false;
 
-    private void resolveStrike(Boat boat, boolean hit) {
+    private void resolveStrike(AbstractBoat boat, boolean hit) {
         if (strikeResolved) return; // guard against repeated calls in the same windup
         strikeResolved = true;
         if (hit) {
@@ -328,6 +338,7 @@ public class LivyatanBoatAttack {
         }
         this.livyatan.setBreachTimer(BREACH_DURATION);
         this.livyatan.setHasStruken(true);
+        hasAttemptedToUnderwhere = false;
     }
 
 
@@ -342,5 +353,6 @@ public class LivyatanBoatAttack {
         lastBoatZ = Double.NaN;
         boatStillTicks = 0;
         strikeResolved = false;
+        hasAttemptedToUnderwhere = false;
     }
 }

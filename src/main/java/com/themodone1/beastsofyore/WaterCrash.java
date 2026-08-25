@@ -81,7 +81,7 @@ public class WaterCrash {
             // Add your calculation logic here
             // Example: livyatan.dive();
         } else if (!moment && oneBefore) {
-            System.out.println("No crash moment.");
+           // System.out.println("No crash moment.");
         }else{
 
         }

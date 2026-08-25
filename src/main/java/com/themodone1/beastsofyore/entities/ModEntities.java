@@ -41,12 +41,16 @@ public class ModEntities
                     }
 
                     AABB checkArea = AABB.ofSize(Vec3.atCenterOf(blockPos), 164.0, 64.0, 164.0);
-                    if (serverLevel.getEntitiesOfClass(Livyatan.class, checkArea).size() >= 2) {
-                        return false;
-                    }
+                    System.out.println("checkArea = " + checkArea);
 
-                    return Mob.checkMobSpawnRules(entityType, serverLevelAccessor, entitySpawnReason, blockPos, randomSource)
-                            && serverLevelAccessor.getFluidState(blockPos).is(FluidTags.WATER);
+                    if (serverLevel.getEntitiesOfClass(Livyatan.class, checkArea).size() >= 2) {
+                        System.out.println("More than 2 livyatans found");
+                        return false;
+                    }else {
+
+                        return Mob.checkMobSpawnRules(entityType, serverLevelAccessor, entitySpawnReason, blockPos, randomSource)
+                                && serverLevelAccessor.getFluidState(blockPos).is(FluidTags.WATER);
+                    }
                 }),
                 RegisterSpawnPlacementsEvent.Operation.REPLACE
         );
