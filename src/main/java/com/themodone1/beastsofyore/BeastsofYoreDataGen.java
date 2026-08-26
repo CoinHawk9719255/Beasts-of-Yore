@@ -1,6 +1,8 @@
 package com.themodone1.beastsofyore;
 
 import com.themodone1.beastsofyore.datagen.ModModelProvider;
+import com.themodone1.beastsofyore.datagen.ModSoundsProvider;
+import com.themodone1.beastsofyore.sounds.ModSounds;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -18,6 +20,7 @@ public class BeastsofYoreDataGen
         PackOutput packOutput  = generator.getPackOutput();
 
         generator.addProvider(true, new ModModelProvider(packOutput));
+        generator.addProvider(true, new ModSoundsProvider(packOutput));
 
 
     }

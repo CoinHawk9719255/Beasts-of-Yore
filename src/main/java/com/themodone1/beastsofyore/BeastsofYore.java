@@ -35,7 +35,7 @@ public class BeastsofYore {
         
     }
     public BeastsofYore(IEventBus modEventBus, ModContainer modContainer) {
-        ModSounds.SOUND_EVENTS.register(modEventBus);
+        ModSounds.register(modEventBus);
         modEventBus.addListener(this::commonSetup);
         ModEntities.ENTITIES.register(modEventBus);
         ModItems.register(modEventBus);

@@ -10,7 +10,10 @@ import com.geckolib.animation.object.PlayState;
 import com.geckolib.animation.state.AnimationTest;
 import com.geckolib.constant.DefaultAnimations;
 import com.geckolib.util.GeckoLibUtil;
+import com.themodone1.beastsofyore.sounds.ModSounds;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -41,6 +44,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import org.jspecify.annotations.Nullable;
 
 //import static com.themodone1.beastsofyore.LivyatanBoatAttack.breachTimer;
 //import static com.themodone1.beastsofyore.LivyatanBoatAttack.hasStruken;
@@ -108,6 +113,15 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
 
     }
 
+    @Override
+    protected @Nullable SoundEvent getDeathSound() {
+
+        if (!level().isClientSide()) {
+             level().playSound(null, blockPosition(), ModSounds.LIVYATAN_DEATH.value(), SoundSource.HOSTILE,1.5f, 1f);
+        }
+        return null;
+
+    }
 
     private <E extends Livyatan> PlayState movementController(AnimationTest<E> state) {
         if (state.isMoving()) {
