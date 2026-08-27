@@ -45,7 +45,7 @@ public class ModEntities
 
                     AABB checkArea = AABB.ofSize(Vec3.atCenterOf(blockPos), 64.0, 64.0, 64.0);
                     if (serverLevel.getEntitiesOfClass(Livyatan.class, checkArea).size() >= 2) {
-                        System.out.println("yo theres too many here");
+                        //System.out.println("yo theres too many here");
                         return false;
                     }
 
