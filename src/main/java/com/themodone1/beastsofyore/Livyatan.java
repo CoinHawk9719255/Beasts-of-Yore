@@ -117,7 +117,7 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
     protected @Nullable SoundEvent getDeathSound() {
 
         if (!level().isClientSide()) {
-             level().playSound(null, blockPosition(), ModSounds.LIVYATAN_DEATH.value(), SoundSource.HOSTILE,1.5f, 1f);
+             level().playSound(null, blockPosition(), ModSounds.LIVYATAN_DEATH.value(), SoundSource.HOSTILE,3.0f, 1f);
         }
         return null;
 

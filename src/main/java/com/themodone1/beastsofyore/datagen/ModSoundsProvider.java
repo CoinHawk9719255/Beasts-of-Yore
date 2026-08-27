@@ -17,6 +17,7 @@ public class ModSoundsProvider extends SoundDefinitionsProvider {
         add(ModSounds.LIVYATAN_DEATH.value(), definition()
                         .subtitle("sounds.beastsofyore.livyatan_death")
                         .with(sound(Identifier.fromNamespaceAndPath(BeastsofYore.MOD_ID,
-                                "fat_ahh_whale_die"))));
+                                "fat_ahh_whale_die"))
+                                .attenuationDistance(32)));
     }
 }

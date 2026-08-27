@@ -173,7 +173,7 @@ public class LivyatanBoatAttack {
             //bit windup rise and strike
 
             double dyStrike = boatPos.y - this.livyatan.getY();
-            double vertical = Mth.clamp(dyStrike / 0.2D, 0.1D, ((2+Math.abs((boat.getY() - this.livyatan.getY())) / 4)));
+            double vertical = Mth.clamp(dyStrike / 0.2D, 0.1D, ((2+Math.abs((boat.getY() - this.livyatan.getY())) / 3)));
 
             this.livyatan.setDeltaMovement(this.livyatan.getDeltaMovement().x, vertical, this.livyatan.getDeltaMovement().z);
             steerToward(boatPos, false); // now runs every windup tick, tracking the moving boat
@@ -205,7 +205,7 @@ public class LivyatanBoatAttack {
     private void strikeBoat(AbstractBoat boat) {
         // this.livyatan.triggerAnim("underwhere","underwhere");
         double dy = Math.abs(boat.getY() - this.livyatan.getY());
-        double vertical = Mth.clamp(dy / 0.2D, 0.1D, ((2+Math.abs((boat.getY() - this.livyatan.getY())) / 4)));
+        double vertical = Mth.clamp(dy / 0.2D, 0.1D, ((2+Math.abs((boat.getY() - this.livyatan.getY())) / 3)));
         this.livyatan.setDeltaMovement(this.livyatan.getDeltaMovement().x, vertical, this.livyatan.getDeltaMovement().z);
         steerToward(boat.position(), false);
         double distanceVertically = Math.abs(boat.getY() - this.livyatan.getY());
