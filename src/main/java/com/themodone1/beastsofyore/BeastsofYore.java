@@ -58,6 +58,13 @@ public class BeastsofYore {
         if (event.getTabKey() == CreativeModeTabs.INGREDIENTS){
             event.accept(ModItems.MYSTERIOUS_TOOTH);
             event.accept(ModItems.CONCRETION);
+
+        }
+        if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS){
+            event.accept(ModItems.LIVYATAN_SPAWN_EGG);
+        }
+        if (event.getTabKey() == CreativeModeTabs.FOOD_AND_DRINKS){
+            event.accept(ModItems.LIVYATAN_MEAT);
         }
     }
 

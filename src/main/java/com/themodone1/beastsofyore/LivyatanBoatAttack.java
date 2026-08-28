@@ -8,6 +8,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.entity.vehicle.boat.Raft;
+import net.minecraft.world.level.CollisionGetter;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -132,6 +133,7 @@ public class LivyatanBoatAttack {
         }
     }
 
+
     private boolean boatDriftedTooFar(AbstractBoat boat) {
         if (boatPosWhenApproachSet == null) return false;
         return boat.position().distanceToSqr(boatPosWhenApproachSet) > 64.0D; // 8 blocks ish
@@ -234,12 +236,12 @@ public class LivyatanBoatAttack {
 
     }
 
+
     private void steerToward(Vec3 targetPos, boolean thrust) {
         double dx = targetPos.x - this.livyatan.getX();
         double dy = targetPos.y - this.livyatan.getY();
         double dz = targetPos.z - this.livyatan.getZ();
         double horizontalDistance = Math.sqrt(dx * dx + dz * dz);
-
         float desiredYaw = (float) (Mth.atan2(dz, dx) * (180D / Math.PI)) - 90.0F;
         float currentYaw = this.livyatan.getYRot();
         float yawDelta = Mth.clamp(Mth.wrapDegrees(desiredYaw - currentYaw), -MAX_TURN_PER_TICK, MAX_TURN_PER_TICK);

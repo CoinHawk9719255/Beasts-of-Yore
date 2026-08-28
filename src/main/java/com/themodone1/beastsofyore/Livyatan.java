@@ -55,6 +55,7 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
 
     private int breachTimer = 0;
     private boolean hasStruken = false;
+
     //public boolean hasAttemptedToUnderwhere = false;
     public void setBreachTimer(int t) {
         this.breachTimer = t;

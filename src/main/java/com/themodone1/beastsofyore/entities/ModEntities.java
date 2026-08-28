@@ -43,11 +43,11 @@ public class ModEntities
                         return false;
                     }
 
-                    AABB checkArea = AABB.ofSize(Vec3.atCenterOf(blockPos), 64.0, 64.0, 64.0);
-                    if (serverLevel.getEntitiesOfClass(Livyatan.class, checkArea).size() >= 2) {
-                        //System.out.println("yo theres too many here");
-                        return false;
-                    }
+                    //AABB checkArea = AABB.ofSize(Vec3.atCenterOf(blockPos), 64.0, 64.0, 64.0);
+                    //if (serverLevel.getEntitiesOfClass(Livyatan.class, checkArea).size() >= 2) {
+                    //    //System.out.println("yo theres too many here");
+                    //    return false;
+                    //}
 
                     return Mob.checkMobSpawnRules(entityType, serverLevelAccessor, entitySpawnReason, blockPos, randomSource)
                             && serverLevelAccessor.getFluidState(blockPos).is(FluidTags.WATER);
@@ -56,18 +56,18 @@ public class ModEntities
         );
     }
 
-    @SubscribeEvent
-    public static void onFinalizeSpawn(FinalizeSpawnEvent event) {
-        if (!(event.getEntity() instanceof Livyatan)) return;
-        if (event.getSpawnType() != EntitySpawnReason.NATURAL) return;
-        if (!(event.getLevel().getLevel() instanceof ServerLevel serverLevel)) return;
+    //@SubscribeEvent
+   // public static void onFinalizeSpawn(FinalizeSpawnEvent event) {
+     //   if (!(event.getEntity() instanceof Livyatan)) return;
+     //   if (event.getSpawnType() != EntitySpawnReason.NATURAL) return;
+      //  if (!(event.getLevel().getLevel() instanceof ServerLevel serverLevel)) return;
 
-        long count = serverLevel.getEntities(EntityTypeTest.forClass(Livyatan.class), AABB.INFINITE, entity ->  true).size();
+      //  long count = serverLevel.getEntities(EntityTypeTest.forClass(Livyatan.class), AABB.INFINITE, entity ->  true).size();
 
-        if (count >= MAX_LIVYATANS_TOTAL) {
-            event.setSpawnCancelled(true);
-        }
-    }
+      //  if (count >= MAX_LIVYATANS_TOTAL) {
+      //      event.setSpawnCancelled(true);
+      //  }
+    //}
 }
 
 

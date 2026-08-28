@@ -2,5 +2,7 @@
   "item.beastsofyore.concretion": "Concretion",
   "item.beastsofyore.mysterious_tooth": "Mysterious Tooth",
   "entity.beastsofyore.livyatan": "Livyatan",
-  "sounds.beastsofyore.livyatan_death": "Livyatan Dies"
+  "sounds.beastsofyore.livyatan_death": "Livyatan Dies",
+  "item.beastsofyore.livyatan_spawn_egg": "Livyatan Spawn Egg",
+  "item.beastsofyore.livyatan_meat": "Livyatan Meat"
 }
