@@ -1,11 +1,9 @@
-package com.themodone1.beastsofyore;
+package com.themodone1.beastsofyore.LivyatanAi;
 
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
-import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.phys.AABB;
 
 import java.util.EnumSet;
@@ -16,6 +14,7 @@ public class LivyatanYummyTargets extends TargetGoal {
     private final Class<?>[] priorityOrder;
     private final double range;
     private int findTargetCooldown = 0;
+
 
     public LivyatanYummyTargets(Livyatan livyatan, Class<?>[] priorityOrder, double range) {
         super(livyatan, false);
@@ -92,6 +91,9 @@ public class LivyatanYummyTargets extends TargetGoal {
         }
         if (e instanceof Player player && (player.isCreative() || player.isSpectator() || player.isInWater() == false)) {
             return false;
+        }
+        if (e instanceof Player player && (player.isInWater())){
+            this.livyatan.setHappyTime(true);
         }
         return this.livyatan.getSensing().hasLineOfSight(e);
     }

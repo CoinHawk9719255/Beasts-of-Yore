@@ -1,14 +1,10 @@
-package com.themodone1.beastsofyore;
+package com.themodone1.beastsofyore.LivyatanAi;
 
-import com.geckolib.animation.AnimationController;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
-import net.minecraft.world.entity.vehicle.boat.Boat;
-import net.minecraft.world.entity.vehicle.boat.Raft;
-import net.minecraft.world.level.CollisionGetter;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 

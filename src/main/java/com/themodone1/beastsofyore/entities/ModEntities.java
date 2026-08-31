@@ -1,20 +1,15 @@
 package com.themodone1.beastsofyore.entities;
 
 import com.themodone1.beastsofyore.BeastsofYore;
-import com.themodone1.beastsofyore.Livyatan;
+import com.themodone1.beastsofyore.LivyatanAi.Livyatan;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
+
 import java.util.function.Supplier;
 
 //@EventBusSubscriber(modid = BeastsofYore.MOD_ID)

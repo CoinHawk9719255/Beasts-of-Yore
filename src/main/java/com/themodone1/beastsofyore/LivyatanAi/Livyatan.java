@@ -1,6 +1,5 @@
-package com.themodone1.beastsofyore;
+package com.themodone1.beastsofyore.LivyatanAi;
 
-import com.geckolib.animatable.GeoAnimatable;
 import com.geckolib.animatable.GeoEntity;
 import com.geckolib.animatable.instance.AnimatableInstanceCache;
 import com.geckolib.animatable.manager.AnimatableManager;
@@ -8,7 +7,6 @@ import com.geckolib.animation.AnimationController;
 import com.geckolib.animation.RawAnimation;
 import com.geckolib.animation.object.PlayState;
 import com.geckolib.animation.state.AnimationTest;
-import com.geckolib.constant.DefaultAnimations;
 import com.geckolib.util.GeckoLibUtil;
 import com.themodone1.beastsofyore.sounds.ModSounds;
 import net.minecraft.server.level.ServerLevel;
@@ -21,12 +19,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.control.SmoothSwimmingMoveControl;
-import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
-import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.world.entity.ai.goal.MoveTowardsTargetGoal;
 import net.minecraft.world.entity.ai.goal.RandomSwimmingGoal;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.navigation.WaterBoundPathNavigation;
 import net.minecraft.world.entity.animal.dolphin.Dolphin;
@@ -38,30 +31,29 @@ import net.minecraft.world.entity.animal.nautilus.Nautilus;
 import net.minecraft.world.entity.animal.squid.GlowSquid;
 import net.minecraft.world.entity.animal.squid.Squid;
 import net.minecraft.world.entity.animal.turtle.Turtle;
-import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.zombie.Drowned;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
-import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import org.jspecify.annotations.Nullable;
 
-//import static com.themodone1.beastsofyore.LivyatanBoatAttack.breachTimer;
-//import static com.themodone1.beastsofyore.LivyatanBoatAttack.hasStruken;
-import static java.lang.IO.print;
+//import static com.themodone1.beastsofyore.LivyatanAi.LivyatanBoatAttack.breachTimer;
+//import static com.themodone1.beastsofyore.LivyatanAi.LivyatanBoatAttack.hasStruken;
+
 
 public class Livyatan extends WaterAnimal implements GeoEntity {
 
     private int breachTimer = 0;
     private boolean hasStruken = false;
-
+    private boolean happyTime = false;
     //public boolean hasAttemptedToUnderwhere = false;
     public void setBreachTimer(int t) {
         this.breachTimer = t;
     }
     public void setHasStruken(boolean v) { this.hasStruken = v; }
     public boolean hasStruken() { return hasStruken; }
+    public void setHappyTime(boolean b) { this.happyTime = b; }
+    public boolean hasHappyTime() { return happyTime; }
     //public boolean hasAttemptedToUnderwhere() { return hasAttemptedToUnderwhere; }
 
 

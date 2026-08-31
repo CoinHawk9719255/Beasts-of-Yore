@@ -1,12 +1,8 @@
-package com.themodone1.beastsofyore;
+package com.themodone1.beastsofyore.LivyatanAi;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.conditions.ICondition;
 
 public class WaterCrash {
     private boolean moment;

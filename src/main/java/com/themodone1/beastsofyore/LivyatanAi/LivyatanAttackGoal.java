@@ -1,26 +1,16 @@
-package com.themodone1.beastsofyore;
+package com.themodone1.beastsofyore.LivyatanAi;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.commands.EffectCommands;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.vehicle.boat.*;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.enchantment.effects.ApplyMobEffect;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.fml.startup.Server;
 
 import java.util.EnumSet;
-
-import com.themodone1.beastsofyore.Livyatan.*;
-import static java.lang.IO.print;
 
 public class LivyatanAttackGoal extends Goal {
     private LivyatanBoatAttack boatAttack;
@@ -56,6 +46,9 @@ public class LivyatanAttackGoal extends Goal {
         LivingEntity target = this.livyatan.getTarget();
         AbstractBoat boat = this.livyatan.getBoatTarget();
 
+        if (this.livyatan.hasHappyTime()){
+
+        }
         if (target == null && boat != null) {
             if (boatAttack == null) {
                 boatAttack = new LivyatanBoatAttack(this.livyatan, this.swimSpeed);
@@ -63,6 +56,8 @@ public class LivyatanAttackGoal extends Goal {
             boatAttack.tick(boat);
             return;
         }
+
+
 
         if (target == null) {
             if (boatAttack != null) boatAttack.reset();

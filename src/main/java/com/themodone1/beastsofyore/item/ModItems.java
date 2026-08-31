@@ -2,7 +2,6 @@ package com.themodone1.beastsofyore.item;
 
 
 import com.themodone1.beastsofyore.BeastsofYore;
-import com.themodone1.beastsofyore.Livyatan;
 import com.themodone1.beastsofyore.entities.ModEntities;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.sounds.SoundEvents;
@@ -14,9 +13,7 @@ import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.component.Consumable;
 import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
-import net.minecraft.world.item.consume_effects.TeleportRandomlyConsumeEffect;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
