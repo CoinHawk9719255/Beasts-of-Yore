@@ -14,6 +14,7 @@ import java.util.EnumSet;
 
 public class LivyatanAttackGoal extends Goal {
     private LivyatanBoatAttack boatAttack;
+    private LivyatanPlayerAttack playerAttack;
     private int timeSinceLastAttackAnimation = 0;
     private final Livyatan livyatan;
     private final double swimSpeed;
@@ -47,8 +48,12 @@ public class LivyatanAttackGoal extends Goal {
         AbstractBoat boat = this.livyatan.getBoatTarget();
 
         if (this.livyatan.hasHappyTime()){
-
-        }
+            //if playerAttack == null{
+                playerAttack = new LivyatanPlayerAttack(this.livyatan, this.swimSpeed);
+                playerAttack.tick(target);
+                return;
+           // }
+       }
         if (target == null && boat != null) {
             if (boatAttack == null) {
                 boatAttack = new LivyatanBoatAttack(this.livyatan, this.swimSpeed);

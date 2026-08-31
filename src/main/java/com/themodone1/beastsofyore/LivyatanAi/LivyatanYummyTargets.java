@@ -95,6 +95,9 @@ public class LivyatanYummyTargets extends TargetGoal {
         if (e instanceof Player player && (player.isInWater())){
             this.livyatan.setHappyTime(true);
         }
+        if (!(e instanceof Player player)){
+            this.livyatan.setHappyTime(false);
+        }
         return this.livyatan.getSensing().hasLineOfSight(e);
     }
     }
