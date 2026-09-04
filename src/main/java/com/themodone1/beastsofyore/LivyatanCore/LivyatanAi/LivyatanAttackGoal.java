@@ -1,5 +1,6 @@
-package com.themodone1.beastsofyore.LivyatanAi;
+package com.themodone1.beastsofyore.LivyatanCore.LivyatanAi;
 
+import com.themodone1.beastsofyore.LivyatanCore.Livyatan;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -47,13 +48,13 @@ public class LivyatanAttackGoal extends Goal {
         LivingEntity target = this.livyatan.getTarget();
         AbstractBoat boat = this.livyatan.getBoatTarget();
 
-        if (this.livyatan.hasHappyTime()){
-            //if playerAttack == null{
+        if (this.livyatan.hasHappyTime() && (playerAttack == null || !playerAttack.sendBack)) {
+            if (playerAttack == null) {
                 playerAttack = new LivyatanPlayerAttack(this.livyatan, this.swimSpeed);
-                playerAttack.tick(target);
-                return;
-           // }
-       }
+            }
+            playerAttack.tick(target);
+            return;
+        }
         if (target == null && boat != null) {
             if (boatAttack == null) {
                 boatAttack = new LivyatanBoatAttack(this.livyatan, this.swimSpeed);
@@ -167,6 +168,7 @@ public class LivyatanAttackGoal extends Goal {
 
             if (this.livyatan.level() instanceof ServerLevel serverLevel && attackAnimationTime >= -10 && distSq <= reach) {
                 this.livyatan.doHurtTarget(serverLevel, target);
+                this.livyatan.onAttack();
                 MobEffectInstance blindness = new MobEffectInstance(MobEffects.BLINDNESS, 60, 5, true, false);
                 MobEffectInstance nausea = new MobEffectInstance(MobEffects.NAUSEA, 120, 255, true, false);
                 target.addEffect(blindness);

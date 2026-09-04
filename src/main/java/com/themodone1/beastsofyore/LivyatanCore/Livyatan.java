@@ -1,4 +1,4 @@
-package com.themodone1.beastsofyore.LivyatanAi;
+package com.themodone1.beastsofyore.LivyatanCore;
 
 import com.geckolib.animatable.GeoEntity;
 import com.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -8,6 +8,8 @@ import com.geckolib.animation.RawAnimation;
 import com.geckolib.animation.object.PlayState;
 import com.geckolib.animation.state.AnimationTest;
 import com.geckolib.util.GeckoLibUtil;
+import com.themodone1.beastsofyore.LivyatanCore.LivyatanAi.LivyatanAttackGoal;
+import com.themodone1.beastsofyore.LivyatanCore.LivyatanAi.LivyatanYummyTargets;
 import com.themodone1.beastsofyore.sounds.ModSounds;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -37,8 +39,8 @@ import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.level.Level;
 import org.jspecify.annotations.Nullable;
 
-//import static com.themodone1.beastsofyore.LivyatanAi.LivyatanBoatAttack.breachTimer;
-//import static com.themodone1.beastsofyore.LivyatanAi.LivyatanBoatAttack.hasStruken;
+//import static com.themodone1.beastsofyore.LivyatanCore.LivyatanAi.LivyatanBoatAttack.breachTimer;
+//import static com.themodone1.beastsofyore.LivyatanCore.LivyatanAi.LivyatanBoatAttack.hasStruken;
 
 
 public class Livyatan extends WaterAnimal implements GeoEntity {
@@ -54,6 +56,7 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
     public boolean hasStruken() { return hasStruken; }
     public void setHappyTime(boolean b) { this.happyTime = b; }
     public boolean hasHappyTime() { return happyTime; }
+    private int attackCounter = 0;
     //public boolean hasAttemptedToUnderwhere() { return hasAttemptedToUnderwhere; }
 
 
@@ -73,6 +76,15 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
             this.setAirSupply(3000);
         }
 
+    }
+
+    @Override
+    public void onAttack() {
+        super.onAttack();
+        attackCounter++;
+    }
+    public int getAttackCounter() {
+        return attackCounter;
     }
 
     private AbstractBoat boatTarget;
@@ -145,7 +157,7 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
     public static AttributeSupplier.Builder createAttributes()
     {
         return Mob.createMobAttributes()
-                .add(Attributes.ATTACK_DAMAGE, 35.0)
+                .add(Attributes.ATTACK_DAMAGE, 40.0)
                 .add(Attributes.ATTACK_KNOCKBACK, 5.5f)
                 .add(Attributes.MOVEMENT_SPEED, 1.2)
                 .add(Attributes.FOLLOW_RANGE, 124.0)

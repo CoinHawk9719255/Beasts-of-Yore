@@ -2,7 +2,7 @@ package com.themodone1.beastsofyore;
 
 import com.themodone1.beastsofyore.entities.ModEntities;
 import com.themodone1.beastsofyore.item.ModItems;
-import com.themodone1.beastsofyore.LivyatanAi.Livyatan;
+import com.themodone1.beastsofyore.LivyatanCore.Livyatan;
 import com.themodone1.beastsofyore.sounds.ModSounds;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import org.slf4j.Logger;

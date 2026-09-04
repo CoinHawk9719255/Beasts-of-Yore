@@ -1,7 +1,7 @@
 package com.themodone1.beastsofyore.entities;
 
 import com.themodone1.beastsofyore.BeastsofYore;
-import com.themodone1.beastsofyore.LivyatanAi.Livyatan;
+import com.themodone1.beastsofyore.LivyatanCore.Livyatan;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.*;

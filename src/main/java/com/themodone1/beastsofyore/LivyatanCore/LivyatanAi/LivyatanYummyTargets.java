@@ -1,5 +1,6 @@
-package com.themodone1.beastsofyore.LivyatanAi;
+package com.themodone1.beastsofyore.LivyatanCore.LivyatanAi;
 
+import com.themodone1.beastsofyore.LivyatanCore.Livyatan;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.player.Player;

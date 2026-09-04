@@ -3,7 +3,7 @@ package com.themodone1.beastsofyore.client.model;
 import com.geckolib.model.GeoModel;
 import com.geckolib.renderer.base.GeoRenderState;
 import com.themodone1.beastsofyore.BeastsofYore;
-import com.themodone1.beastsofyore.LivyatanAi.Livyatan;
+import com.themodone1.beastsofyore.LivyatanCore.Livyatan;
 import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.NonNull;
 

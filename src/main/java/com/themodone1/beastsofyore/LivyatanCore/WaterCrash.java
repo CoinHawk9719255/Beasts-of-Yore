@@ -1,4 +1,4 @@
-package com.themodone1.beastsofyore.LivyatanAi;
+package com.themodone1.beastsofyore.LivyatanCore;
 
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
