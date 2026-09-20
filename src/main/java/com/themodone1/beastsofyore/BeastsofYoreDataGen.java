@@ -1,6 +1,7 @@
 package com.themodone1.beastsofyore;
 
 import com.themodone1.beastsofyore.datagen.ModModelProvider;
+import com.themodone1.beastsofyore.datagen.ModRecipeProvider;
 import com.themodone1.beastsofyore.datagen.ModSoundsProvider;
 import com.themodone1.beastsofyore.sounds.ModSounds;
 import net.minecraft.data.DataGenerator;
@@ -16,11 +17,14 @@ public class BeastsofYoreDataGen
     @SubscribeEvent
     public static void gatherClientData(GatherDataEvent.Client event)
     {
+
         DataGenerator generator = event.getGenerator();
         PackOutput packOutput  = generator.getPackOutput();
+        var lookupProvider = event.getLookupProvider();
 
         generator.addProvider(true, new ModModelProvider(packOutput));
         generator.addProvider(true, new ModSoundsProvider(packOutput));
+        generator.addProvider(true,new ModRecipeProvider.Runner(packOutput, lookupProvider));
 
 
     }

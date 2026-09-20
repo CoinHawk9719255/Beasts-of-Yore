@@ -9,6 +9,7 @@ import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
+import net.neoforged.fml.common.Mod;
 
 public class ModModelProvider extends ModelProvider {
     public ModModelProvider(PackOutput output)
@@ -22,6 +23,9 @@ public class ModModelProvider extends ModelProvider {
         itemModels.generateFlatItem(ModItems.MYSTERIOUS_TOOTH.get(),  ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.LIVYATAN_SPAWN_EGG.get(),  ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.LIVYATAN_MEAT.get(),   ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.COOKED_LIVYATAN_MEAT.get(),ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.ARGENTAVIS_FEATHER.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.ARGENTAVIS_EGG.get(),  ModelTemplates.FLAT_ITEM);
 
 
 

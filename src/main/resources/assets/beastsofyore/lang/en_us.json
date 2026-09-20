@@ -4,5 +4,8 @@
   "entity.beastsofyore.livyatan": "Livyatan",
   "sounds.beastsofyore.livyatan_death": "Livyatan Dies",
   "item.beastsofyore.livyatan_spawn_egg": "Livyatan Spawn Egg",
-  "item.beastsofyore.livyatan_meat": "Livyatan Meat"
+  "item.beastsofyore.livyatan_meat": "Livyatan Meat",
+  "item.beastsofyore.cooked_livyatan_meat": "Cooked Livyatan Meat",
+  "item.beastsofyore.argentavis_egg": "Mysterious Egg",
+  "item.beastsofyore.argentavis_feather": "Mysterious Feather"
 }

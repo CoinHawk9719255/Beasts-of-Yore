@@ -84,12 +84,24 @@ public class LivyatanAttackGoal extends Goal {
         }
 
 
+        // ============================================================
+        // === REUSABLE MOVEMENT LOGIC START ===
+        // Everything in this block just steers/propels the entity toward
+        // a target point in 3D space (turn to face it, thrust forward,
+        // nudge vertically, bump off collisions while swimming). Nothing
+        // below this point depends on attack/animation state, so this is
+        // the chunk to lift out into a shared "swim toward target" method
+        // if you want to reuse it elsewhere (e.g. a generic aquatic
+        // steering goal/util).
+        // ============================================================
+
         double dx = target.getX() - this.livyatan.getX();
         double dy = target.getY() - this.livyatan.getY();
         double dz = target.getZ() - this.livyatan.getZ();
         double horizontalDistance = Math.sqrt((dx * dx) + (dz * dz));
         double verticalDistance = Math.sqrt((dy * dy) + (dz * dz))-Math.sqrt((dy * dy) + (dx * dx));
 
+        // --- Yaw (turn to face target horizontally), clamped per-tick ---
         float desiredYaw = (float) (Mth.atan2(dz, dx) * (180D / Math.PI)) - 90.0F;
         float currentYaw = this.livyatan.getYRot();
         float yawDelta = Mth.clamp(Mth.wrapDegrees(desiredYaw - currentYaw), -MAX_TURN_PER_TICK, MAX_TURN_PER_TICK);
@@ -99,7 +111,7 @@ public class LivyatanAttackGoal extends Goal {
         this.livyatan.yBodyRot = newYaw;
         this.livyatan.yHeadRot = newYaw;
 
-
+        // --- Pitch (turn to face target vertically), clamped per-tick ---
         float desiredPitch = (float) -(Mth.atan2(dy, horizontalDistance) * (180D / Math.PI));
         float currentPitch = this.livyatan.getXRot();
         float pitchDelta = Mth.clamp(Mth.wrapDegrees(desiredPitch - currentPitch), -MAX_TURN_PER_TICK, MAX_TURN_PER_TICK);
@@ -111,13 +123,7 @@ public class LivyatanAttackGoal extends Goal {
         boolean facingCloseEnough = Math.abs(yawDelta) < MAX_TURN_PER_TICK + 0.1F || Math.abs(Mth.wrapDegrees(desiredYaw - currentYaw)) < 30F;
 
 
-
-       // this.livyatan.triggerAnim("breach", "underthere");
-//        if (hasAttemptedToUnderwhere){
-//            this.livyatan.triggerAnim("breach", "underthere");
-//            System.out.println("hold up something seems wrong");
-//            this.livyatan.hasStruken();
-//        }
+        // --- Thrust forward toward target (only while both are in water) ---
         if (facingCloseEnough && distSq > 4.0D && this.livyatan.isInWater() && target.isInWater()) {
             Vec3 forward = Vec3.directionFromRotation(this.livyatan.getXRot(), this.livyatan.getYRot());
             Vec3 movement = forward.scale(this.swimSpeed  * 0.05D);
@@ -128,13 +134,19 @@ public class LivyatanAttackGoal extends Goal {
             this.livyatan.setDeltaMovement(this.livyatan.getDeltaMovement().add(movement));
 
         } else if (!this.livyatan.isInWater()) {
+            // out of water: bleed off horizontal momentum
             Vec3 vel = this.livyatan.getDeltaMovement();
             this.livyatan.setDeltaMovement(vel.x * 0.8D, vel.y, vel.z * 0.8D);
         }
 
+        // --- Nudge upward if stuck against something while swimming ---
         if (this.livyatan.horizontalCollision && this.livyatan.isInWater()) {
             this.livyatan.setDeltaMovement(this.livyatan.getDeltaMovement().add(0, 0.1D, 0));
         }
+
+        // ============================================================
+        // === REUSABLE MOVEMENT LOGIC END ===
+        // ============================================================
 
         if (animationDoneAndCanBite == true){
             attackAnimationTime--;

@@ -57,6 +57,9 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
     public void setHappyTime(boolean b) { this.happyTime = b; }
     public boolean hasHappyTime() { return happyTime; }
     private int attackCounter = 0;
+    private boolean retreating = false;
+    public void setRetreating(boolean b) { this.retreating = b; }
+    public boolean isRetreating() { return retreating; }
     //public boolean hasAttemptedToUnderwhere() { return hasAttemptedToUnderwhere; }
 
 
@@ -202,6 +205,10 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
 
     @Override
     public void aiStep() {
+        if (this.getTarget() == null) retreating = false; // safety so the flag can't get stuck on
+        if (this.getTarget() != null && !retreating) {
+            rotateTowardsTarget(this.getTarget());
+        }
         super.aiStep();
         if (this.getTarget() != null) {
             rotateTowardsTarget(this.getTarget());
@@ -220,9 +227,9 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
     }
     private void rotateTowardsTarget(LivingEntity target) {
         double directionX = target.getX() - this.getX();
-        double directionY = target.getY() - this.getY();
+        double directionZ = target.getZ() - this.getZ();
 
-        float desiredLookAt_I_CantRememeberTheSpecificWord = (float) (Mth.atan2(directionY, directionX) * (180D / Math.PI)) - 90.0F;
+        float desiredLookAt_I_CantRememeberTheSpecificWord = (float) (Mth.atan2(directionZ, directionX) * (180D / Math.PI)) - 90.0F;
 
 
         float currentLookingAngle = this.getYRot();

@@ -27,14 +27,16 @@ public class ModItems
             properties -> new SpawnEggItem(
                     properties.spawnEgg(ModEntities.LIVYATAN.get())
             ));
+    public static final DeferredItem<Item> ARGENTAVIS_FEATHER = ITEMS.registerSimpleItem("argentavis_feather");
+    public static final DeferredItem<Item> ARGENTAVIS_EGG = ITEMS.registerSimpleItem("argentavis_egg");
    // public static final DeferredItem<Item>  = ITEMS.registerSimpleItem("consumable",
             //"livyatan_meat");
    public static final DeferredItem<Item> LIVYATAN_MEAT = ITEMS.registerSimpleItem(
            "livyatan_meat",
            props -> props.food(
                    new FoodProperties.Builder()
-                           .nutrition(10)
-                           .saturationModifier(0.6f)
+                           .nutrition(8)
+                           .saturationModifier(0.4f)
                            .build())
                    .component(
                    DataComponents.CONSUMABLE,
@@ -55,6 +57,25 @@ public class ModItems
                            .build()
            )
    );
+    public static final DeferredItem<Item> COOKED_LIVYATAN_MEAT = ITEMS.registerSimpleItem(
+            "cooked_livyatan_meat",
+            props -> props.food(
+                            new FoodProperties.Builder()
+                                    .nutrition(20)
+                                    .saturationModifier(1.5f)
+                                    .build())
+                    .component(
+                            DataComponents.CONSUMABLE,
+                            Consumable.builder()
+                                    .consumeSeconds(4f)
+                                    .animation(ItemUseAnimation.EAT)
+                                    .sound(SoundEvents.GENERIC_EAT)
+                                    .soundAfterConsume(SoundEvents.GENERIC_EAT)
+                                    .hasConsumeParticles(true)
+                                    .build()
+                    )
+    );
+
 
     public static void register(IEventBus eventBus){
         ITEMS.register(eventBus);
