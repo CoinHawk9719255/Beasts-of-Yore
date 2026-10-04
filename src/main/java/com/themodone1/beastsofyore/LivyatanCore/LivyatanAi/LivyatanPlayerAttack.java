@@ -11,6 +11,8 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.monster.warden.Warden;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.RandomUtils;
@@ -25,24 +27,46 @@ public class LivyatanPlayerAttack {
     private static final int MAX_RETREAT_TICKS = 200;       // 10s safety timeout in case it gets stuck on terrain
     private static final float RETREAT_TURN_PER_TICK = 5.5F; // how fast it whips around after a hit (charging still uses MAX_TURN_PER_TICK)
 
+    // --- dash charge settings ---
+    // the charge goal is picked ONCE (in beginCharge) and never re-aimed at the player's live
+    // position.
+    private static final float CHARGE_TURN_PER_TICK = 8.0F;   // fast snap onto the charge line, then basically straight since the goal doesn't move
+    private static final double CHARGE_SPEED_MULT = 2.0D;
+    private static final double CHARGE_OVERSHOOT = 6.0D;      // blocks past the player's position, so the pass carries all the way through them
+    private static final double CHARGE_HIT_RANGE_SQ = 16.0D;  // 4 blocks
+    private static final int MAX_CHARGE_TICKS = 60;           // 3s safety timeout
+
     private final Livyatan livyatan;
     private final double swimSpeed;
     private int timeTargetOutOfWater = 0;
-    private enum HappyTime {CLAUSTROPHOBIA, TAIL_SWIPE, FAKE_FEINT, DASH}
+    private enum HappyTime {CLAUSTROPHOBIA, TAIL_SWIPE, FAKE_FEINT, DASH, SCREECH}
     private int attackCooldown = 0;
     private int attackAnimationTime = 0;
     private HappyTime happyTimePhase = HappyTime.CLAUSTROPHOBIA;
     private  boolean chooseTimeForHappy = true;
     private int whichHappyShall_I_;
-    private int attackTimes;
+    private int attackTimes = 0;
     public boolean sendBack = false;
     private float strengthBoost = 0;
     private int strengthCount = 0;
-    // --- tail swipe retreat state ---
+
+    // --- retreat state (shared by tail-swipe recovery and dash windup) ---
+    private enum RetreatPurpose { NONE, TAIL_SWIPE_RECOVER, DASH_WINDUP }
     private boolean retreating = false;
     private Vec3 retreatPos = null;
     private int retreatTicks = 0;
+    private RetreatPurpose retreatPurpose = RetreatPurpose.NONE;
     private int claus = 0;
+
+    // --- dash charge state ---
+    private boolean charging = false;
+    private Vec3 chargeTarget = null;
+    private int chargeTicks = 0;
+    private boolean chargeHasHit = false;
+    private int dashStrikesRemaining = 0;
+    private boolean tailSwipeInProgress = false;
+    private boolean claustrophobiaInProgress = false;
+    private boolean screechInProgress = false;
 
     public LivyatanPlayerAttack(Livyatan livyatan, double swimSpeed) {
         this.livyatan = livyatan;
@@ -53,12 +77,18 @@ public class LivyatanPlayerAttack {
         if (target == null){
             sendBack = false;
             resetRetreat();
+            resetCharge();
+            tailSwipeInProgress = false;
+            claustrophobiaInProgress = false;
             return;
         }
         if (!target.isAlive()) {
             this.livyatan.setTarget(null);
             sendBack = false;
             resetRetreat();
+            resetCharge();
+            tailSwipeInProgress = false;
+            claustrophobiaInProgress = false;
             return;
         }
 
@@ -68,28 +98,22 @@ public class LivyatanPlayerAttack {
                 this.livyatan.setTarget(null);
                 timeTargetOutOfWater = 0;
                 resetRetreat();
+                resetCharge();
                 return;
             }
         } else {
             timeTargetOutOfWater = 0;
         }
 
-
-
-        // you know its time i start using comments
-        //ive gone idk 4 5 years without it
-        //maybe i should since its a recurring problem that i cant read my damn code after writing it
-        //anyway this is the finding player and moving part
-
         //finding player
         double player_X = this.livyatan.getTarget().getX();
         double player_Y = this.livyatan.getTarget().getY();
         double player_Z = this.livyatan.getTarget().getZ();
 
-        // (Double.NaN == x is always false in java, Double.isNaN is the way to check)
         if (Double.isNaN(player_X) || Double.isNaN(player_Y) || Double.isNaN(player_Z)) {
             this.livyatan.setTarget(null);
             resetRetreat();
+            resetCharge();
             return;
         }
 
@@ -101,53 +125,51 @@ public class LivyatanPlayerAttack {
             return;
         }
 
+        // dash charge phase also skips checkIfCanAttack for the same reason - once it has
+        // committed to a straight pass it should carry through, not freeze mid-charge
+        if (charging) {
+            tickCharge(target);
+            return;
+        }
+
         //move to player
 
         if (checkIfCanAttack(this.livyatan.getTarget())) {
-            if (chooseTimeForHappy) {
-                System.out.println("changing tacits");
-                whichHappyShall_I_= RandomUtils.nextInt(0, 4);
-                chooseTimeForHappy = false;
-                attackTimes = RandomUtils.nextInt(0, 3);
-            }
+
 
             switch (happyTimePhase){
                 //case claustrophovbia
                 case CLAUSTROPHOBIA -> {
-                    int clausNow = this.livyatan.getAttackCounter();
-                    if (clausNow > claus && clausNow == attackTimes){
-                        chooseTimeForHappy = true;
+                    // pick/reroll only once per flurry, same reasoning as TAIL_SWIPE - then
+                    // count attackTimes down locally so the flurry actually runs its full length
+                    if (!claustrophobiaInProgress) {
+                        tacticChanger();
+                        claustrophobiaInProgress = true;
                     }
-                    claus = this.livyatan.getAttackCounter();
-                    int temp1 = RandomUtils.nextInt(0,4);
-                    if (temp1 == 1) {
-                        strengthCount++;
-                        MobEffectInstance strengthBuff = new MobEffectInstance(MobEffects.STRENGTH, 1200, strengthCount, false, false);
-                        this.livyatan.addEffect(strengthBuff);
-                    }
-                    //easiest one here bro just copy and paste the attack maybe theres a way to call it instead but eh oh well
-                    sendBack = true;                                   //^^^
-                    //shit man comments are goated did that comment ^^^ got sendback idea instanlty
-                    //maybe thats what rubber duck debugging is used for
+                    strengthBooster();
+                    sendBack = true;
                     this.livyatan.onAttack();
+
+                    attackTimes--;
+                    if (attackTimes <= 0) {
+                        claustrophobiaInProgress = false; // free to pick a new tactic next tick
+                    }
 
                 }
 
 
                 //case tailswipe
                 case TAIL_SWIPE -> {
-                    int clausNow = this.livyatan.getAttackCounter();
-                    if (clausNow > claus && clausNow == attackTimes){
-                        chooseTimeForHappy = true;
+                    // only reroll/decrement attackTimes on the FIRST tick of this attempt - not
+                    // every tick of the approach, or it rerolls to a new phase long before the
+                    // whale closes the distance to attack range
+                    if (!tailSwipeInProgress) {
+                        tacticChanger();
+                        tailSwipeInProgress = true;
                     }
                     // phase 1: charge the player. once the hit lands we flip to phase 2 (tickRetreat)
 
-                    int temp1 = RandomUtils.nextInt(0,3);
-                    if (temp1 == 1) {
-                        strengthCount++;
-                        MobEffectInstance strengthBuff = new MobEffectInstance(MobEffects.STRENGTH, 1200, strengthCount, false, false);
-                        this.livyatan.addEffect(strengthBuff);
-                    }
+
                     double distSq = this.livyatan.distanceToSqr(target);
                     boolean canThrust = distSq > 4.0D && target.isInWater();
 
@@ -155,7 +177,6 @@ public class LivyatanPlayerAttack {
                     swimToward(target.position(), 1.0D, canThrust, 180F, MAX_TURN_PER_TICK);
 
                     if (distSq <= 75){
-                        //System.out.println(distSq +"in range broski");
 
                         if (this.livyatan.level() instanceof ServerLevel serverLevel) {
                             this.livyatan.doHurtTarget(serverLevel, target);
@@ -164,24 +185,78 @@ public class LivyatanPlayerAttack {
                             MobEffectInstance nausea = new MobEffectInstance(MobEffects.NAUSEA, 120, 255, true, false);
 
                             target.addEffect(nausea);
-                            strengthBoost = strengthBoost + (RandomUtils.nextInt(0, 4)/10);
+                            strengthBooster();
                         }
 
-                        // hit landed -> turn around and swim off
+                        // hit landed -> turn around and swim off, and clear the guard so the
+                        // next time TAIL_SWIPE comes up it's free to pick/reroll again
+                        tailSwipeInProgress = false;
                         retreatPos = pickRetreatPos(target);
                         retreating = true;
                         retreatTicks = 0;
+                        retreatPurpose = RetreatPurpose.TAIL_SWIPE_RECOVER;
                         this.livyatan.setRetreating(true);
                     }
                 }
 
 
                 //case fake feint
-                case FAKE_FEINT -> {}
+                case FAKE_FEINT -> {
+                    tacticChanger();
+                }
 
 
                 //case dash
-                case DASH -> {}
+                case DASH -> {
+                    tacticChanger();
+                    // kick off a dash sequence: retreat away first (windup), then beginCharge()
+                    // picks up from there once the windup retreat finishes. repeated strikes just
+                    // mean dashStrikesRemaining > 1, handled at the end of tickCharge.
+                    if (!retreating && !charging) {
+                        dashStrikesRemaining = RandomUtils.nextInt(2, 4); // 2-3 passes this sequence
+                        retreatPos = pickRetreatPos(target);
+                        retreating = true;
+                        retreatTicks = 0;
+                        retreatPurpose = RetreatPurpose.DASH_WINDUP;
+                        this.livyatan.setRetreating(true);
+                    }
+                }
+                case SCREECH -> {
+                    if (!screechInProgress) {
+                        tacticChanger();
+                        screechInProgress = true;
+                    }
+                    double distSq = this.livyatan.distanceToSqr(target);
+                    boolean canThrust = distSq > 4.0D && target.isInWater();
+                    swimToward(target.position(), 0.4D, canThrust, 180F, MAX_TURN_PER_TICK);
+                    //give a dizzy effect
+                    //get time leftand add because fuck you for trying to lilypad it pob
+                    boolean hasNauseaAlready = this.livyatan.getTarget().hasEffect(MobEffects.NAUSEA);
+                    boolean hasSlownessAlready = this.livyatan.getTarget().hasEffect(MobEffects.SLOWNESS);
+                    boolean hasMiningFatigueAlready = this.livyatan.getTarget().hasEffect(MobEffects.MINING_FATIGUE);
+                    int nauseaTime = 0;
+                    int slownessTime = 0;
+                    int miningFatigueTime = 0;
+                    if(hasNauseaAlready){
+                         nauseaTime  = this.livyatan.getTarget().getEffect(MobEffects.NAUSEA).getDuration();
+                    }
+                    if(hasSlownessAlready){
+                        slownessTime = this.livyatan.getTarget().getEffect(MobEffects.SLOWNESS).getDuration();
+                    }
+                    if(hasMiningFatigueAlready){
+                        miningFatigueTime = this.livyatan.getTarget().getEffect(MobEffects.MINING_FATIGUE).getDuration();
+                    }
+                    nauseaTime +=300;
+                    slownessTime +=300;
+                    miningFatigueTime +=300;
+                    MobEffectInstance nausea = new MobEffectInstance(MobEffects.NAUSEA, nauseaTime, 255, true, false);
+                    MobEffectInstance slowness = new MobEffectInstance(MobEffects.SLOWNESS, slownessTime, 4, true, false);
+                    MobEffectInstance miningFatigue = new MobEffectInstance(MobEffects.MINING_FATIGUE, miningFatigueTime, 2, true, false);
+                   //give player the effet
+
+                    tailSwipeInProgress = false;
+
+                }
             }
 
         }else{
@@ -193,8 +268,50 @@ public class LivyatanPlayerAttack {
 
 
     }
-
+    public void onRegularAttackLanded() {
+        if (attackTimes > 0) {
+            attackTimes--;
+        }
+        if (attackTimes <= 0) {
+            chooseTimeForHappy = true;
+            tacticChanger();
+            sendBack = false;
+        }
+    }
     /** phase 2 of the tail swipe: turn around, swim to the retreat point, then go back to charging */
+    public void tacticChanger(){
+        System.out.println("tacticChanger" + attackTimes);
+
+        if (attackTimes <= 0){
+            chooseTimeForHappy = true;
+            if (chooseTimeForHappy) {
+                System.out.println("changing tacits");
+                whichHappyShall_I_= RandomUtils.nextInt(0, 5);
+                happyTimePhase = HappyTime.values()[whichHappyShall_I_];
+                chooseTimeForHappy = false;
+                if (whichHappyShall_I_ == 0) {
+                    attackTimes = RandomUtils.nextInt(3, 6);
+                }else if(whichHappyShall_I_ == 4){
+                    attackTimes = 1;
+                }
+                else{
+                    attackTimes = RandomUtils.nextInt(1, 3);
+                }
+                System.out.println("attack type" + happyTimePhase);
+                System.out.println("attack times for this new attack type" + attackTimes);
+            }
+
+        }
+        attackTimes--;
+    }
+    public void strengthBooster(){
+        int temp1 = RandomUtils.nextInt(0,4);
+        if (temp1 == 1) {
+            strengthCount++;
+            MobEffectInstance strengthBuff = new MobEffectInstance(MobEffects.STRENGTH, 1200, strengthCount, false, false);
+            this.livyatan.addEffect(strengthBuff);
+        }
+    }
     private void tickRetreat(LivingEntity target) {
         retreatTicks++;
 
@@ -203,7 +320,12 @@ public class LivyatanPlayerAttack {
 
         boolean arrived = this.livyatan.position().distanceToSqr(retreatPos) < 9.0D; // within 3 blocks
         if (arrived || retreatTicks > MAX_RETREAT_TICKS) {
-            resetRetreat(); // next tick it's back to phase 1 and charges again
+            RetreatPurpose finishedPurpose = retreatPurpose;
+            resetRetreat();
+            if (finishedPurpose == RetreatPurpose.DASH_WINDUP) {
+                beginCharge(target);
+            }
+            // TAIL_SWIPE_RECOVER (or NONE) just falls back to tick()'s normal switch next tick
         }
     }
 
@@ -212,6 +334,59 @@ public class LivyatanPlayerAttack {
         retreating = false;
         retreatPos = null;
         retreatTicks = 0;
+        retreatPurpose = RetreatPurpose.NONE;
+    }
+
+    /** starts the actual charge: locks in a point past the player so the pass is a straight line, not a chase */
+    private void beginCharge(LivingEntity target) {
+        Vec3 toTarget = target.position().subtract(this.livyatan.position());
+        double len = Math.max(toTarget.length(), 0.001D);
+        Vec3 dir = toTarget.scale(1.0D / len);
+
+        chargeTarget = target.position().add(dir.scale(CHARGE_OVERSHOOT));
+        charging = true;
+        chargeTicks = 0;
+        chargeHasHit = false;
+    }
+
+    private void tickCharge(LivingEntity target) {
+        chargeTicks++;
+
+        // chargeTarget is fixed for the whole pass - this is what keeps it a straight line
+        // instead of orbiting the player the way re-aiming at their live position would.
+        swimToward(chargeTarget, CHARGE_SPEED_MULT, true, 180F, CHARGE_TURN_PER_TICK);
+
+        if (!chargeHasHit && this.livyatan.distanceToSqr(target) <= CHARGE_HIT_RANGE_SQ) {
+            if (this.livyatan.level() instanceof ServerLevel serverLevel) {
+                this.livyatan.doHurtTarget(serverLevel, target);
+                this.livyatan.onAttack();
+                strengthBooster();
+            }
+            chargeHasHit = true; // only one hit per pass, even though it phases on through
+        }
+
+        boolean arrived = this.livyatan.position().distanceToSqr(chargeTarget) < 9.0D;
+        if (arrived || chargeTicks > MAX_CHARGE_TICKS) {
+            resetCharge();
+
+            dashStrikesRemaining--;
+            if (dashStrikesRemaining > 0) {
+                // wind up again for another pass
+                retreatPos = pickRetreatPos(target);
+                retreating = true;
+                retreatTicks = 0;
+                retreatPurpose = RetreatPurpose.DASH_WINDUP;
+                this.livyatan.setRetreating(true);
+            }
+            // else: sequence is over, next tick() falls through to the normal switch/tacticChanger
+        }
+    }
+
+    private void resetCharge() {
+        charging = false;
+        chargeTarget = null;
+        chargeTicks = 0;
+        chargeHasHit = false;
     }
 
     /**

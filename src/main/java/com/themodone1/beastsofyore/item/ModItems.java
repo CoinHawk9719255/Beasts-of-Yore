@@ -5,6 +5,7 @@ import com.themodone1.beastsofyore.BeastsofYore;
 import com.themodone1.beastsofyore.entities.ModEntities;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.damagesource.DamageEffects;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
@@ -29,14 +30,13 @@ public class ModItems
             ));
     public static final DeferredItem<Item> ARGENTAVIS_FEATHER = ITEMS.registerSimpleItem("argentavis_feather");
     public static final DeferredItem<Item> ARGENTAVIS_EGG = ITEMS.registerSimpleItem("argentavis_egg");
-   // public static final DeferredItem<Item>  = ITEMS.registerSimpleItem("consumable",
-            //"livyatan_meat");
+    public static final DeferredItem<Item> LIVYATAN_TOOTH = ITEMS.registerSimpleItem("livyatan_tooth");
    public static final DeferredItem<Item> LIVYATAN_MEAT = ITEMS.registerSimpleItem(
            "livyatan_meat",
            props -> props.food(
                    new FoodProperties.Builder()
                            .nutrition(8)
-                           .saturationModifier(0.4f)
+                           .saturationModifier(0.2f)
                            .build())
                    .component(
                    DataComponents.CONSUMABLE,
@@ -62,7 +62,7 @@ public class ModItems
             props -> props.food(
                             new FoodProperties.Builder()
                                     .nutrition(20)
-                                    .saturationModifier(1.5f)
+                                    .saturationModifier(2.5f)
                                     .build())
                     .component(
                             DataComponents.CONSUMABLE,

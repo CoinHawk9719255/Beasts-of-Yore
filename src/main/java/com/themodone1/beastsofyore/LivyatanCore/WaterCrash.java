@@ -1,5 +1,6 @@
 package com.themodone1.beastsofyore.LivyatanCore;
 
+import com.themodone1.beastsofyore.LivyatanCore.LivyatanAi.LivyatanBoatAttack;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -27,7 +28,9 @@ public class WaterCrash {
         if (moment && !oneBefore) {
            // Level level = Minecraft.getInstance().level;
             //System.out.println("Calculating crash physics...");
+
             if (!level.isClientSide()) {
+
                 //ParticleTypes.SCULK_CHARGE_POP
                 //new SimpleParticleType(true)
 //                ((ServerLevel) level).addParticle(ParticleTypes.SCULK_CHARGE_POP,

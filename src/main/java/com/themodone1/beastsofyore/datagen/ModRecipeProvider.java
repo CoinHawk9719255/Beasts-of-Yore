@@ -46,8 +46,8 @@ public class ModRecipeProvider extends RecipeProvider {
                 RecipeCategory.FOOD,
                 CookingBookCategory.FOOD,
                 ModItems.COOKED_LIVYATAN_MEAT,
-                2.0f,
-                200
+                3.0f,
+                300
 
         ).unlockedBy("has_livyatan_meat", has(ModItems.LIVYATAN_MEAT))
                 .save(this.output,BeastsofYore.MOD_ID + ":livyatan_cooking");

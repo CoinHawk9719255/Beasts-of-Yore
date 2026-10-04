@@ -5,9 +5,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.List;
 
 
 public class LivyatanBoatAttack {
@@ -15,7 +18,7 @@ public class LivyatanBoatAttack {
     private static final double MAX_SPEED = 0.8D;
     private static final int WAIT_DURATION = 22;
     private static final int BREACH_DURATION = 20;
-
+    public List<Entity> boatYumTargets;
     //public static int breachTimer = 0;
     private final Livyatan livyatan;
     private final double swimSpeed;
@@ -205,6 +208,7 @@ public class LivyatanBoatAttack {
         // this.livyatan.triggerAnim("underwhere","underwhere");
         double dy = Math.abs(boat.getY() - this.livyatan.getY());
         double vertical = Mth.clamp(dy / 0.2D, 0.1D, ((2+Math.abs((boat.getY() - this.livyatan.getY())) / 3)));
+       // System.out.println("Alright speed we are attacking at is " + vertical);
         this.livyatan.setDeltaMovement(this.livyatan.getDeltaMovement().x, vertical, this.livyatan.getDeltaMovement().z);
         steerToward(boat.position(), false);
         double distanceVertically = Math.abs(boat.getY() - this.livyatan.getY());
@@ -312,9 +316,17 @@ public class LivyatanBoatAttack {
     private void breakBoat(AbstractBoat boat) {
         //this.livyatan.stopTriggeredAnim("underwhere","underwhere");
         //this.livyatan.triggerAnim("underthere","underthere");
-        this.livyatan.swing(InteractionHand.MAIN_HAND);
-        boat.ejectPassengers();
-        boat.hurt(boat.damageSources().generic(), 5000.0f);
+//        if ( && attackAnimationTime >= -10 && distSq <= reach) {
+//            this.livyatan.doHurtTarget(serverLevel, target);
+        if (this.livyatan.level() instanceof ServerLevel serverLevel){
+           boatYumTargets = boat.getPassengers();
+            this.livyatan.swing(InteractionHand.MAIN_HAND);
+            boat.ejectPassengers();
+            boat.hurt(boat.damageSources().generic(), 10.0f);
+            if (!boatYumTargets.isEmpty()) {
+                boatYumTargets.forEach((entity) -> this.livyatan.doHurtTarget(serverLevel, entity));
+            }
+        }
     }
     private void queueBite() {
         if (this.livyatan.hasStruken() == false) {

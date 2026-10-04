@@ -26,6 +26,7 @@ public class ModModelProvider extends ModelProvider {
         itemModels.generateFlatItem(ModItems.COOKED_LIVYATAN_MEAT.get(),ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.ARGENTAVIS_FEATHER.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.ARGENTAVIS_EGG.get(),  ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.LIVYATAN_TOOTH.get(),   ModelTemplates.FLAT_ITEM);
 
 
 

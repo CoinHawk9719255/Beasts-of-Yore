@@ -11,10 +11,13 @@ import com.geckolib.util.GeckoLibUtil;
 import com.themodone1.beastsofyore.LivyatanCore.LivyatanAi.LivyatanAttackGoal;
 import com.themodone1.beastsofyore.LivyatanCore.LivyatanAi.LivyatanYummyTargets;
 import com.themodone1.beastsofyore.sounds.ModSounds;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -34,10 +37,17 @@ import net.minecraft.world.entity.animal.squid.GlowSquid;
 import net.minecraft.world.entity.animal.squid.Squid;
 import net.minecraft.world.entity.animal.turtle.Turtle;
 import net.minecraft.world.entity.monster.zombie.Drowned;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootTable;
 import org.jspecify.annotations.Nullable;
+
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 //import static com.themodone1.beastsofyore.LivyatanCore.LivyatanAi.LivyatanBoatAttack.breachTimer;
 //import static com.themodone1.beastsofyore.LivyatanCore.LivyatanAi.LivyatanBoatAttack.hasStruken;
@@ -60,6 +70,7 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
     private boolean retreating = false;
     public void setRetreating(boolean b) { this.retreating = b; }
     public boolean isRetreating() { return retreating; }
+    public static final int preTickAirSupply = 3000;
     //public boolean hasAttemptedToUnderwhere() { return hasAttemptedToUnderwhere; }
 
 
@@ -84,6 +95,7 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
     @Override
     public void onAttack() {
         super.onAttack();
+
         attackCounter++;
     }
     public int getAttackCounter() {
@@ -104,6 +116,7 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
 
     public Livyatan(EntityType<? extends WaterAnimal> entityType, Level level) {
         super(entityType, level);
+        this.xpReward = 5;
     }
 
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
@@ -142,6 +155,10 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
     }
 
     @Override
+    protected void dropFromLootTable(ServerLevel level, DamageSource source, boolean playerKilled) {
+        super.dropFromLootTable(level, source, playerKilled);
+    }
+
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.geoCache;
     }
@@ -160,7 +177,7 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
     public static AttributeSupplier.Builder createAttributes()
     {
         return Mob.createMobAttributes()
-                .add(Attributes.ATTACK_DAMAGE, 40.0)
+                .add(Attributes.ATTACK_DAMAGE, 30.0)
                 .add(Attributes.ATTACK_KNOCKBACK, 5.5f)
                 .add(Attributes.MOVEMENT_SPEED, 1.2)
                 .add(Attributes.FOLLOW_RANGE, 124.0)

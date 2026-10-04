@@ -1,8 +1,8 @@
 {
   "type": "minecraft:smelting",
   "category": "food",
-  "cookingtime": 200,
-  "experience": 2.0,
+  "cookingtime": 300,
+  "experience": 3.0,
   "ingredient": "beastsofyore:livyatan_meat",
   "result": {
     "id": "beastsofyore:cooked_livyatan_meat"

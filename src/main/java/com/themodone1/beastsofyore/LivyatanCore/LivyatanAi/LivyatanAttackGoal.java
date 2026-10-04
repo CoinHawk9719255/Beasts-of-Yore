@@ -6,12 +6,16 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.boat.*;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
+
+import static com.ibm.icu.text.PluralRules.Operand.e;
 
 public class LivyatanAttackGoal extends Goal {
     private LivyatanBoatAttack boatAttack;
@@ -55,6 +59,7 @@ public class LivyatanAttackGoal extends Goal {
             playerAttack.tick(target);
             return;
         }
+
         if (target == null && boat != null) {
             if (boatAttack == null) {
                 boatAttack = new LivyatanBoatAttack(this.livyatan, this.swimSpeed);
@@ -177,7 +182,7 @@ public class LivyatanAttackGoal extends Goal {
             animationDoneAndCanBite = false;
             attackCooldown = 30;
             this.livyatan.swing(InteractionHand.MAIN_HAND);
-
+            this.livyatan.onAttack();
             if (this.livyatan.level() instanceof ServerLevel serverLevel && attackAnimationTime >= -10 && distSq <= reach) {
                 this.livyatan.doHurtTarget(serverLevel, target);
                 this.livyatan.onAttack();
@@ -185,6 +190,19 @@ public class LivyatanAttackGoal extends Goal {
                 MobEffectInstance nausea = new MobEffectInstance(MobEffects.NAUSEA, 120, 255, true, false);
                 target.addEffect(blindness);
                 target.addEffect(nausea);
+//                if(this.livyatan.getTarget().getType() == null){
+//                    //no kaboom pls
+//                }else {
+//                    if (this.livyatan.getTarget().getType() == EntityType.PLAYER) {
+                if (playerAttack != null) {
+                    playerAttack.onRegularAttackLanded();
+                    playerAttack.strengthBooster();
+                }
+
+                      //
+//                    }
+//                }
+
             }
             timeSinceLastAttackAnimation = 0;
         }
