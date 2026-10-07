@@ -29,6 +29,14 @@ public class ModSounds {
                 // Takes in the registry name
                 //SoundEvent::createVariableRangeEvent
         );
+        public static final Holder<SoundEvent> LIVYATAN_SCREECH = SOUND_EVENTS.register(
+                "livyatan_screech",
+                () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(BeastsofYore.MOD_ID, "livyatan_screech"))
+        );
+        public static final Holder<SoundEvent> SHIP_HORN = SOUND_EVENTS.register(
+                "ship_horn",
+                () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(BeastsofYore.MOD_ID, "shiphorn"))
+        );
 
         // There is a currently unused method to register fixed range (= non-attenuating) events as well:
 //        public static final Holder<SoundEvent> MY_FIXED_SOUND = SOUND_EVENTS.register(

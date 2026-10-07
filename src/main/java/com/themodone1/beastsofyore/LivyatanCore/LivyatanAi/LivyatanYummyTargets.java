@@ -7,6 +7,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.phys.AABB;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class LivyatanYummyTargets extends TargetGoal {
     private final Class<?>[] priorityOrder;
     private final double range;
     private int findTargetCooldown = 0;
-
+    private ArrayList<LivingEntity> blacklist;
 
     public LivyatanYummyTargets(Livyatan livyatan, Class<?>[] priorityOrder, double range) {
         super(livyatan, false);
@@ -87,6 +88,9 @@ public class LivyatanYummyTargets extends TargetGoal {
     }
 
     private boolean isValidCandidate(LivingEntity e) {
+        if(blacklist.contains(e)){
+            return false;
+        }
         if (e.isAlive() == false) {
             return false;
         }
@@ -99,6 +103,36 @@ public class LivyatanYummyTargets extends TargetGoal {
         if (!(e instanceof Player player)){
             this.livyatan.setHappyTime(false);
         }
+        if(!checkIfCanAttack(e)){
+
+                blacklist.add(e);
+
+            return false;
+        }
         return this.livyatan.getSensing().hasLineOfSight(e);
     }
+    public boolean checkIfCanAttack(LivingEntity target) {
+        double player_X = this.livyatan.getTarget().getX();
+        double player_Y = this.livyatan.getTarget().getY();
+        double player_Z = this.livyatan.getTarget().getZ();
+
+        if (player_X == Double.NaN || player_Y == Double.NaN || player_Z == Double.NaN) {
+            this.livyatan.setTarget(null);
+            return false;
+        }
+
+        AABB largeEnough = this.livyatan.getTarget().getBoundingBox()
+                .inflate(4.0, 2.0, 4.0);
+
+        boolean isFree = this.livyatan.getTarget().level().noCollision(this.livyatan.getTarget(),largeEnough);
+        return isFree;
     }
+
+    public ArrayList<LivingEntity> getBlacklist() {
+        return blacklist;
+    }
+
+    public void setBlacklist(ArrayList<LivingEntity> blacklist) {
+        this.blacklist = blacklist;
+    }
+}

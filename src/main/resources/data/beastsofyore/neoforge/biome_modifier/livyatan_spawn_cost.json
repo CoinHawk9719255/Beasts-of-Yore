@@ -3,7 +3,7 @@
   "biomes": "#minecraft:is_ocean",
   "entity_types": "beastsofyore:livyatan",
   "spawn_cost": {
-    "energy_budget": 4.0,
-    "charge": 1.0
+    "energy_budget": 1.0,
+    "charge": 0.3
   }
 }

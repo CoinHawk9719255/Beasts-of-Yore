@@ -6,16 +6,13 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.boat.*;
+import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
-
-import static com.ibm.icu.text.PluralRules.Operand.e;
 
 public class LivyatanAttackGoal extends Goal {
     private LivyatanBoatAttack boatAttack;
@@ -87,7 +84,12 @@ public class LivyatanAttackGoal extends Goal {
         } else {
             timeTargetOutOfWater = 0;
         }
-
+        if (this.livyatan.tickCount % 10 == 0) {
+            if(!checkIfCanAttack(target)){
+                this.livyatan.setTarget(null);
+                return;
+            }
+        }
 
         // ============================================================
         // === REUSABLE MOVEMENT LOGIC START ===
@@ -186,17 +188,17 @@ public class LivyatanAttackGoal extends Goal {
             if (this.livyatan.level() instanceof ServerLevel serverLevel && attackAnimationTime >= -10 && distSq <= reach) {
                 this.livyatan.doHurtTarget(serverLevel, target);
                 this.livyatan.onAttack();
-                MobEffectInstance blindness = new MobEffectInstance(MobEffects.BLINDNESS, 60, 5, true, false);
-                MobEffectInstance nausea = new MobEffectInstance(MobEffects.NAUSEA, 120, 255, true, false);
+                MobEffectInstance blindness = new MobEffectInstance(MobEffects.BLINDNESS, 120, 5, true, false);
+                //MobEffectInstance nausea = new MobEffectInstance(MobEffects.NAUSEA, 120, 255, true, false);
                 target.addEffect(blindness);
-                target.addEffect(nausea);
+               // target.addEffect(nausea);
 //                if(this.livyatan.getTarget().getType() == null){
 //                    //no kaboom pls
 //                }else {
 //                    if (this.livyatan.getTarget().getType() == EntityType.PLAYER) {
                 if (playerAttack != null) {
                     playerAttack.onRegularAttackLanded();
-                    playerAttack.strengthBooster();
+                    playerAttack.strengthBooster(false);
                 }
 
                       //
@@ -225,6 +227,23 @@ public class LivyatanAttackGoal extends Goal {
         Vec3 toTarget = target.position().subtract(this.livyatan.position()).normalize();
         return lookVec.dot(toTarget) > 0.8D;
     }
+    public boolean checkIfCanAttack(LivingEntity target) {
+        double player_X = this.livyatan.getTarget().getX();
+        double player_Y = this.livyatan.getTarget().getY();
+        double player_Z = this.livyatan.getTarget().getZ();
+
+        if (player_X == Double.NaN || player_Y == Double.NaN || player_Z == Double.NaN) {
+            this.livyatan.setTarget(null);
+            return false;
+        }
+
+        AABB largeEnough = this.livyatan.getTarget().getBoundingBox()
+                .inflate(4.0, 2.0, 4.0);
+
+        boolean isFree = this.livyatan.getTarget().level().noCollision(this.livyatan.getTarget(),largeEnough);
+        return isFree;
+    }
+
 
     @Override
     public boolean requiresUpdateEveryTick() {

@@ -7,5 +7,23 @@
       }
     ],
     "subtitle": "sounds.beastsofyore.livyatan_death"
+  },
+  "livyatan_screech": {
+    "sounds": [
+      {
+        "attenuation_distance": 32,
+        "name": "beastsofyore:whale_click"
+      }
+    ],
+    "subtitle": "sounds.beastsofyore.livyatan_screech"
+  },
+  "shiphorn": {
+    "sounds": [
+      {
+        "attenuation_distance": 32,
+        "name": "beastsofyore:shiphorn"
+      }
+    ],
+    "subtitle": "sounds.beastsofyore.ship_horn"
   }
 }

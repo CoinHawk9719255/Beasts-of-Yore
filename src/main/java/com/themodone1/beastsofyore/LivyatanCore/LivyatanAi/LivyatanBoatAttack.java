@@ -63,6 +63,9 @@ public class LivyatanBoatAttack {
 //            this.livyatan.stopTriggeredAnim("underwhere","underwhere");
 //
 //        }
+        if (this.livyatan.horizontalCollision && this.livyatan.isInWater()) {
+            this.livyatan.setDeltaMovement(this.livyatan.getDeltaMovement().add(0, 0.2D, 0));
+        }
 
         boolean moving = isBoatMoving(boat);
 
@@ -319,6 +322,7 @@ public class LivyatanBoatAttack {
 //        if ( && attackAnimationTime >= -10 && distSq <= reach) {
 //            this.livyatan.doHurtTarget(serverLevel, target);
         if (this.livyatan.level() instanceof ServerLevel serverLevel){
+            this.livyatan.lilyNoPadders();
            boatYumTargets = boat.getPassengers();
             this.livyatan.swing(InteractionHand.MAIN_HAND);
             boat.ejectPassengers();

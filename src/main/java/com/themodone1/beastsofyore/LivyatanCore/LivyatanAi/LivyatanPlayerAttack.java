@@ -1,23 +1,27 @@
 package com.themodone1.beastsofyore.LivyatanCore.LivyatanAi;
 
 
+import com.themodone1.beastsofyore.Config;
 import com.themodone1.beastsofyore.LivyatanCore.Livyatan;
+import com.themodone1.beastsofyore.sounds.ModSounds;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.OutgoingChatMessage;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.monster.warden.Warden;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.RandomUtils;
 
+import java.util.Objects;
+import java.util.OptionalInt;
+
 public class LivyatanPlayerAttack {
+
+    boolean configDebug = Config.DEBUG_LOG_EXTRA.get();
 
     private static final float MAX_TURN_PER_TICK = 3.5F;
 
@@ -26,14 +30,14 @@ public class LivyatanPlayerAttack {
     private static final double RETREAT_MAX_DIST = 20.0D;
     private static final int MAX_RETREAT_TICKS = 200;       // 10s safety timeout in case it gets stuck on terrain
     private static final float RETREAT_TURN_PER_TICK = 5.5F; // how fast it whips around after a hit (charging still uses MAX_TURN_PER_TICK)
-
+    private int time = 0;
     // --- dash charge settings ---
     // the charge goal is picked ONCE (in beginCharge) and never re-aimed at the player's live
     // position.
     private static final float CHARGE_TURN_PER_TICK = 8.0F;   // fast snap onto the charge line, then basically straight since the goal doesn't move
     private static final double CHARGE_SPEED_MULT = 2.0D;
-    private static final double CHARGE_OVERSHOOT = 6.0D;      // blocks past the player's position, so the pass carries all the way through them
-    private static final double CHARGE_HIT_RANGE_SQ = 16.0D;  // 4 blocks
+    private static final double CHARGE_OVERSHOOT = 10.0D;      // blocks past the player's position, so the pass carries all the way through them
+    private static final double CHARGE_HIT_RANGE_SQ = 32.0D;  // 4 blocks
     private static final int MAX_CHARGE_TICKS = 60;           // 3s safety timeout
 
     private final Livyatan livyatan;
@@ -74,6 +78,18 @@ public class LivyatanPlayerAttack {
     }
 
     public void tick(LivingEntity target) {
+        System.out.println("debug config option is"+configDebug);
+        if(configDebug) {
+            boolean ST_TEMP = this.livyatan.hasEffect(MobEffects.STRENGTH);
+            if (ST_TEMP) {
+                OptionalInt SI_TEMP = OptionalInt.of(Objects.requireNonNull(this.livyatan.getEffect(MobEffects.STRENGTH)).getDuration());
+                OptionalInt SL_TEMP = OptionalInt.of(Objects.requireNonNull(this.livyatan.getEffect(MobEffects.STRENGTH)).getAmplifier());
+                System.out.println("Strenght current effect and ampiflier");
+                System.out.println(SI_TEMP);
+                System.out.println(SL_TEMP);
+                System.out.println("End of logging broski macorani");
+            }
+        }
         if (target == null){
             sendBack = false;
             resetRetreat();
@@ -135,6 +151,9 @@ public class LivyatanPlayerAttack {
         //move to player
 
         if (checkIfCanAttack(this.livyatan.getTarget())) {
+            if (this.livyatan.horizontalCollision && this.livyatan.isInWater()) {
+                this.livyatan.setDeltaMovement(this.livyatan.getDeltaMovement().add(0, 0.1D, 0));
+            }
 
 
             switch (happyTimePhase){
@@ -146,7 +165,7 @@ public class LivyatanPlayerAttack {
                         tacticChanger();
                         claustrophobiaInProgress = true;
                     }
-                    strengthBooster();
+                    strengthBooster(false);
                     sendBack = true;
                     this.livyatan.onAttack();
 
@@ -176,7 +195,7 @@ public class LivyatanPlayerAttack {
                     // 180F = always allowed to thrust (this is what your old code effectively did)
                     swimToward(target.position(), 1.0D, canThrust, 180F, MAX_TURN_PER_TICK);
 
-                    if (distSq <= 75){
+                    if (distSq <= 85){
 
                         if (this.livyatan.level() instanceof ServerLevel serverLevel) {
                             this.livyatan.doHurtTarget(serverLevel, target);
@@ -185,7 +204,7 @@ public class LivyatanPlayerAttack {
                             MobEffectInstance nausea = new MobEffectInstance(MobEffects.NAUSEA, 120, 255, true, false);
 
                             target.addEffect(nausea);
-                            strengthBooster();
+                            strengthBooster(false);
                         }
 
                         // hit landed -> turn around and swim off, and clear the guard so the
@@ -222,10 +241,11 @@ public class LivyatanPlayerAttack {
                     }
                 }
                 case SCREECH -> {
-                    if (!screechInProgress) {
-                        tacticChanger();
-                        screechInProgress = true;
-                    }
+//                    if (!screechInProgress) {
+//                        tacticChanger();
+//                        screechInProgress = true;
+//                    }
+
                     double distSq = this.livyatan.distanceToSqr(target);
                     boolean canThrust = distSq > 4.0D && target.isInWater();
                     swimToward(target.position(), 0.4D, canThrust, 180F, MAX_TURN_PER_TICK);
@@ -234,9 +254,11 @@ public class LivyatanPlayerAttack {
                     boolean hasNauseaAlready = this.livyatan.getTarget().hasEffect(MobEffects.NAUSEA);
                     boolean hasSlownessAlready = this.livyatan.getTarget().hasEffect(MobEffects.SLOWNESS);
                     boolean hasMiningFatigueAlready = this.livyatan.getTarget().hasEffect(MobEffects.MINING_FATIGUE);
+                    boolean hasWeakness = this.livyatan.getTarget().hasEffect(MobEffects.WEAKNESS);
                     int nauseaTime = 0;
                     int slownessTime = 0;
                     int miningFatigueTime = 0;
+                    int weaknessTime = 0;
                     if(hasNauseaAlready){
                          nauseaTime  = this.livyatan.getTarget().getEffect(MobEffects.NAUSEA).getDuration();
                     }
@@ -246,16 +268,44 @@ public class LivyatanPlayerAttack {
                     if(hasMiningFatigueAlready){
                         miningFatigueTime = this.livyatan.getTarget().getEffect(MobEffects.MINING_FATIGUE).getDuration();
                     }
-                    nauseaTime +=300;
-                    slownessTime +=300;
-                    miningFatigueTime +=300;
+                    if(hasWeakness){
+                        weaknessTime = this .livyatan.getTarget().getEffect(MobEffects.WEAKNESS).getDuration();
+                    }
+                    nauseaTime +=200;
+                    slownessTime +=400;
+                    miningFatigueTime +=400;
+                    weaknessTime += 200;
+
                     MobEffectInstance nausea = new MobEffectInstance(MobEffects.NAUSEA, nauseaTime, 255, true, false);
                     MobEffectInstance slowness = new MobEffectInstance(MobEffects.SLOWNESS, slownessTime, 4, true, false);
                     MobEffectInstance miningFatigue = new MobEffectInstance(MobEffects.MINING_FATIGUE, miningFatigueTime, 2, true, false);
-                   //give player the effet
+                   MobEffectInstance weakness = new MobEffectInstance(MobEffects.WEAKNESS, weaknessTime, 2, true, false);
+                    //give player the effet
 
-                    tailSwipeInProgress = false;
+                    target.addEffect(nausea);
+                    target.addEffect(slowness);
+                    target.addEffect(miningFatigue);
+                    target.addEffect(weakness);
+                    System.out.println("Screeching");
+                    if(configDebug){
+                        this.livyatan.level().playSound(null,
+                                this.livyatan.getX(),
+                                this.livyatan.getY(),
+                                this.livyatan.getZ(),
+                                ModSounds.SHIP_HORN.value(),
+                                SoundSource.HOSTILE,1.2F,1.0F);
+                    }else{
+                        this.livyatan.level().playSound(null,
+                                this.livyatan.getX(),
+                                this.livyatan.getY(),
+                                this.livyatan.getZ(),
+                                ModSounds.LIVYATAN_SCREECH.value(),
+                                SoundSource.HOSTILE,1.2F,1.0F);
+                    }
 
+
+                    strengthBooster(true);
+                    tacticChanger();
                 }
             }
 
@@ -290,7 +340,7 @@ public class LivyatanPlayerAttack {
                 happyTimePhase = HappyTime.values()[whichHappyShall_I_];
                 chooseTimeForHappy = false;
                 if (whichHappyShall_I_ == 0) {
-                    attackTimes = RandomUtils.nextInt(3, 6);
+                    attackTimes = RandomUtils.nextInt(3,6);
                 }else if(whichHappyShall_I_ == 4){
                     attackTimes = 1;
                 }
@@ -304,12 +354,23 @@ public class LivyatanPlayerAttack {
         }
         attackTimes--;
     }
-    public void strengthBooster(){
-        int temp1 = RandomUtils.nextInt(0,4);
-        if (temp1 == 1) {
-            strengthCount++;
+    public void strengthBooster(boolean max){
+        boolean miguel = this.livyatan.hasEffect(MobEffects.STRENGTH);
+        if(!miguel){
+            strengthCount = (int)(strengthCount-1/2);
+        }
+        if (max){
+            strengthCount+=2;
             MobEffectInstance strengthBuff = new MobEffectInstance(MobEffects.STRENGTH, 1200, strengthCount, false, false);
             this.livyatan.addEffect(strengthBuff);
+        }
+        else {
+            int temp1 = RandomUtils.nextInt(0,4);
+            if (temp1 == 1) {
+                strengthCount++;
+                MobEffectInstance strengthBuff = new MobEffectInstance(MobEffects.STRENGTH, 1200, strengthCount, false, false);
+                this.livyatan.addEffect(strengthBuff);
+            }
         }
     }
     private void tickRetreat(LivingEntity target) {
@@ -360,9 +421,9 @@ public class LivyatanPlayerAttack {
             if (this.livyatan.level() instanceof ServerLevel serverLevel) {
                 this.livyatan.doHurtTarget(serverLevel, target);
                 this.livyatan.onAttack();
-                strengthBooster();
+                strengthBooster(false);
             }
-            chargeHasHit = true; // only one hit per pass, even though it phases on through
+           // chargeHasHit = true; // only one hit per pass, even though it phases on through
         }
 
         boolean arrived = this.livyatan.position().distanceToSqr(chargeTarget) < 9.0D;

@@ -1,0 +1,14 @@
+{
+  "type": "neoforge:add_spawn_costs",
+  "biomes": "#minecraft:is_ocean",
+  "entity_types": [
+    "minecraft:cod",
+    "minecraft:salmon",
+    "minecraft:pufferfish",
+    "minecraft:tropical_fish"
+  ],
+  "spawn_cost": {
+    "energy_budget": 100.0,
+    "charge": 0.5
+  }
+}

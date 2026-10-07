@@ -19,5 +19,15 @@ public class ModSoundsProvider extends SoundDefinitionsProvider {
                         .with(sound(Identifier.fromNamespaceAndPath(BeastsofYore.MOD_ID,
                                 "fat_ahh_whale_die"))
                                 .attenuationDistance(32)));
+        add(ModSounds.SHIP_HORN.value(),definition()
+                .subtitle("sounds.beastsofyore.ship_horn")
+                .with(sound(Identifier.fromNamespaceAndPath(BeastsofYore.MOD_ID,
+                        "shiphorn"))
+                        .attenuationDistance(32)));
+        add(ModSounds.LIVYATAN_SCREECH.value(),definition()
+                .subtitle("sounds.beastsofyore.livyatan_screech")
+                .with(sound(Identifier.fromNamespaceAndPath(BeastsofYore.MOD_ID,
+                        "whale_click"))
+                        .attenuationDistance(32)));
     }
 }

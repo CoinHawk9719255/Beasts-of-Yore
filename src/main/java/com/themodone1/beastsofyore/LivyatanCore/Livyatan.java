@@ -11,8 +11,7 @@ import com.geckolib.util.GeckoLibUtil;
 import com.themodone1.beastsofyore.LivyatanCore.LivyatanAi.LivyatanAttackGoal;
 import com.themodone1.beastsofyore.LivyatanCore.LivyatanAi.LivyatanYummyTargets;
 import com.themodone1.beastsofyore.sounds.ModSounds;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -37,20 +36,14 @@ import net.minecraft.world.entity.animal.squid.GlowSquid;
 import net.minecraft.world.entity.animal.squid.Squid;
 import net.minecraft.world.entity.animal.turtle.Turtle;
 import net.minecraft.world.entity.monster.zombie.Drowned;
-import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import org.jspecify.annotations.Nullable;
 
-import java.util.function.BiConsumer;
-import java.util.function.Function;
-
-//import static com.themodone1.beastsofyore.LivyatanCore.LivyatanAi.LivyatanBoatAttack.breachTimer;
-//import static com.themodone1.beastsofyore.LivyatanCore.LivyatanAi.LivyatanBoatAttack.hasStruken;
 
 
 public class Livyatan extends WaterAnimal implements GeoEntity {
@@ -58,24 +51,45 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
     private int breachTimer = 0;
     private boolean hasStruken = false;
     private boolean happyTime = false;
+
     //public boolean hasAttemptedToUnderwhere = false;
     public void setBreachTimer(int t) {
         this.breachTimer = t;
     }
-    public void setHasStruken(boolean v) { this.hasStruken = v; }
-    public boolean hasStruken() { return hasStruken; }
-    public void setHappyTime(boolean b) { this.happyTime = b; }
-    public boolean hasHappyTime() { return happyTime; }
+
+    public void setHasStruken(boolean v) {
+        this.hasStruken = v;
+    }
+
+    public boolean hasStruken() {
+        return hasStruken;
+    }
+
+    public void setHappyTime(boolean b) {
+        this.happyTime = b;
+    }
+
+    public boolean hasHappyTime() {
+        return happyTime;
+    }
+
     private int attackCounter = 0;
     private boolean retreating = false;
-    public void setRetreating(boolean b) { this.retreating = b; }
-    public boolean isRetreating() { return retreating; }
+
+    public void setRetreating(boolean b) {
+        this.retreating = b;
+    }
+
+    public boolean isRetreating() {
+        return retreating;
+    }
+
     public static final int preTickAirSupply = 3000;
     //public boolean hasAttemptedToUnderwhere() { return hasAttemptedToUnderwhere; }
 
 
     int timeToFull20Ticks = 0;
-    private static final Class<?>[] yummy_targets_all = { Player.class,  AbstractBoat.class, Turtle.class,Dolphin.class, Nautilus.class, Squid.class, GlowSquid.class, Cod.class, TropicalFish.class, Salmon.class, Drowned.class };
+    private static final Class<?>[] yummy_targets_all = {Player.class, AbstractBoat.class, Turtle.class, Dolphin.class, Nautilus.class, Squid.class, GlowSquid.class, Cod.class, TropicalFish.class, Salmon.class, Drowned.class};
 
 
     @Override
@@ -98,13 +112,14 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
 
         attackCounter++;
     }
+
     public int getAttackCounter() {
         return attackCounter;
     }
 
     private AbstractBoat boatTarget;
     private boolean oneBefore = true;
-    private boolean oneAfter =true;
+    private boolean oneAfter = true;
 
     public AbstractBoat getBoatTarget() {
         return boatTarget;
@@ -131,14 +146,13 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
                 .triggerableAnim("underthere", RawAnimation.begin().thenPlay("underthere")));
 
 
-
     }
 
     @Override
     protected @Nullable SoundEvent getDeathSound() {
 
         if (!level().isClientSide()) {
-             level().playSound(null, blockPosition(), ModSounds.LIVYATAN_DEATH.value(), SoundSource.HOSTILE,3.0f, 1f);
+            level().playSound(null, blockPosition(), ModSounds.LIVYATAN_DEATH.value(), SoundSource.HOSTILE, 3.0f, 1f);
         }
         return null;
 
@@ -174,19 +188,18 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
         this.goalSelector.addGoal(1, new LivyatanAttackGoal(this, 1.7));
         this.goalSelector.addGoal(5, new RandomSwimmingGoal(this, 1.0, 40));
     }
-    public static AttributeSupplier.Builder createAttributes()
-    {
+
+    public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.ATTACK_DAMAGE, 30.0)
                 .add(Attributes.ATTACK_KNOCKBACK, 5.5f)
                 .add(Attributes.MOVEMENT_SPEED, 1.2)
                 .add(Attributes.FOLLOW_RANGE, 124.0)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 100.0D)
-                .add(Attributes.MAX_HEALTH, 300.0)
-                .add(Attributes.ARMOR,10);
+                .add(Attributes.MAX_HEALTH, 400.0)
+                .add(Attributes.ARMOR, 10);
 
     }
-
 
 
     public boolean doHurtTarget(ServerLevel level, Entity target) {
@@ -201,12 +214,43 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
     }
 
 
+//    @SubscribeEvent
+//    public static void onLivingFall(LivingFallEvent event) {
+//        System.out.println("I have fallen");
+//        if(event.getEntity() instanceof Livyatan livyatan) {
+//            Level level = livyatan.level();
+//
+//            if (!level.isClientSide()) {
+//                AABB bb = event.getEntity().getBoundingBox();
+//
+//                int y = (int) Math.floor(bb.minY); // lily pads sit at the bottom
+//                int minX = (int) Math.floor(bb.minX);
+//                int maxX = (int) Math.floor(bb.maxX);
+//                int minZ = (int) Math.floor(bb.minZ);
+//                int maxZ = (int) Math.floor(bb.maxZ);
+
+    /// /har de har har pob fucking lilypadder no more of that nonsense
+//                for (int x = minX; x <= maxX; x++) {
+//                    for (int z = minZ; z <= maxZ; z++) {
+//                        BlockPos pos = new BlockPos(x, y, z);
+//                        if (level.getBlockState(pos).is(Blocks.LILY_PAD)) {
+//                            level.destroyBlock(pos, true);
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
     @Override
     public void tick() {
 
         super.tick();
+        lilyNoPadders();
+        if (!level().isClientSide() && !isInWater()) {
+            System.out.println("noGravity=" + isNoGravity() + " onGround=" + onGround() + " vel=" + getDeltaMovement());
+        }
         oneAfter = isInWater();
-        WaterCrash crash_event = new WaterCrash(oneAfter, oneBefore, getX(),getY(),getZ());
+        WaterCrash crash_event = new WaterCrash(oneAfter, oneBefore, getX(), getY(), getZ());
         //System.out.println("strueken MY MAN IM GOING INSANE "+hasStruken);
         crash_event.update(level());
         oneBefore = isInWater();
@@ -218,7 +262,7 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
     }
 
 
-    private static final float  maxTurnPerTickForLivyatanMaybe_I_ShouldMakeTheseVariableNamesLessFlipFloppity = 2.5F;
+    private static final float maxTurnPerTickForLivyatanMaybe_I_ShouldMakeTheseVariableNamesLessFlipFloppity = 2.5F;
 
     @Override
     public void aiStep() {
@@ -232,16 +276,17 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
         }
         //ANIMATION STOPPER GOD DAMN I HOPE I REMEMBER WHAT I TYPED IT SO I CAN SEARCH FOR IT LATER
         //System.out.println("has struken for reset"+ hasStruken);
-       // System.out.println("breach timerr"+breachTimer);
+        // System.out.println("breach timerr"+breachTimer);
         if (hasStruken) {
             breachTimer--;
             if (breachTimer <= 0) {
                 hasStruken = false;
                 triggerAnim("breach", "underthere"); // was stopTriggeredAnim("underwhere","underwhere")
-               // System.out.println("Resetted");
+                // System.out.println("Resetted");
             }
         }
     }
+
     private void rotateTowardsTarget(LivingEntity target) {
         double directionX = target.getX() - this.getX();
         double directionZ = target.getZ() - this.getZ();
@@ -257,10 +302,46 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
         float newOhYeahItWasCalledYaw = currentLookingAngle + shortestDirectionThatIsActualAndNotMathBeingSilly;
 
 
-
         this.setYRot(newOhYeahItWasCalledYaw);
         this.yBodyRot = newOhYeahItWasCalledYaw;
         this.yHeadRot = newOhYeahItWasCalledYaw;
+
+
+    }
+
+    public boolean lilyNoPadders() {
+        Level level = this.level();
+        if (level.isClientSide()) return false;
+
+        AABB box = this.getBoundingBox();
+
+
+        int minX = Mth.floor(box.minX);
+        int maxX = Mth.floor(box.maxX);
+
+        int targetY = Mth.floor(box.maxY + 1.1D);
+
+        int minZ = Mth.floor(box.minZ);
+        int maxZ = Mth.floor(box.maxZ);
+
+
+
+        for (int i = 0; i < 2; i++) {
+            for (int x = minX; x <= maxX; x++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    BlockPos pos = new BlockPos(x, targetY, z);
+                    BlockState state = level.getBlockState(pos);
+
+
+                    if (state.is(Blocks.LILY_PAD)) {
+                        level.destroyBlock(pos, true);
+                    }
+                }
+            }
+            targetY = Mth.floor(box.minY - 0.1D);
+}
+            return false;
+
 
 
     }
