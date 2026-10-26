@@ -1,4 +1,13 @@
 {
+  "echoes_of_the_deep": {
+    "sounds": [
+      {
+        "name": "beastsofyore:echoes_of_the_deep",
+        "stream": true
+      }
+    ],
+    "subtitle": "sounds.beastsofyore_echoes_of_the_deep"
+  },
   "livyatan_death": {
     "sounds": [
       {
@@ -7,6 +16,16 @@
       }
     ],
     "subtitle": "sounds.beastsofyore.livyatan_death"
+  },
+  "livyatan_fight": {
+    "sounds": [
+      {
+        "attenuation_distance": 32,
+        "name": "beastsofyore:livyatanfight",
+        "stream": true
+      }
+    ],
+    "subtitle": "sounds.beastsofyore.livyatan_fight"
   },
   "livyatan_screech": {
     "sounds": [

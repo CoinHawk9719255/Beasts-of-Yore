@@ -1,16 +1,24 @@
 package com.themodone1.beastsofyore.LivyatanCore.LivyatanAi;
 
 import com.themodone1.beastsofyore.LivyatanCore.Livyatan;
+import com.themodone1.beastsofyore.LivyatanCore.WaterCrashNoCheck;
+import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.data.SoundDefinition;
+import org.apache.commons.lang3.RandomUtils;
 
 import java.util.List;
+import java.util.Random;
 
 
 public class LivyatanBoatAttack {
@@ -316,6 +324,7 @@ public class LivyatanBoatAttack {
         return lastValid;
     }
 
+
     private void breakBoat(AbstractBoat boat) {
         //this.livyatan.stopTriggeredAnim("underwhere","underwhere");
         //this.livyatan.triggerAnim("underthere","underthere");
@@ -323,13 +332,26 @@ public class LivyatanBoatAttack {
 //            this.livyatan.doHurtTarget(serverLevel, target);
         if (this.livyatan.level() instanceof ServerLevel serverLevel){
             this.livyatan.lilyNoPadders();
+            //this.livyatan.ghoster = true;
            boatYumTargets = boat.getPassengers();
             this.livyatan.swing(InteractionHand.MAIN_HAND);
+            this.livyatan.level().playSound(
+                    null,
+                    boat.blockPosition(),
+                    SoundEvents.PLAYER_SPLASH_HIGH_SPEED,
+                    SoundSource.HOSTILE
+            );
             boat.ejectPassengers();
+           WaterCrashNoCheck crasjh_event =  new WaterCrashNoCheck(boat.getX(),boat.getY(),boat.getZ());
+           crasjh_event.update(this.livyatan.level());
             boat.hurt(boat.damageSources().generic(), 10.0f);
+
             if (!boatYumTargets.isEmpty()) {
+                Random random = new Random();
                 boatYumTargets.forEach((entity) -> this.livyatan.doHurtTarget(serverLevel, entity));
+                boatYumTargets.forEach(entity -> entity.setDeltaMovement(entity.getDeltaMovement().add((Math.random()*2)+ random.nextInt(0,1), Math.abs((Math.random()*4)+ random.nextInt(0,1)), (Math.random()*2)+ random.nextInt(0,1))));
             }
+          //  this.livyatan.ghoster = false;
         }
     }
     private void queueBite() {

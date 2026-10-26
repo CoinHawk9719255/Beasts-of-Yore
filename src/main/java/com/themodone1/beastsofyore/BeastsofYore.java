@@ -1,5 +1,6 @@
 package com.themodone1.beastsofyore;
 
+import com.themodone1.beastsofyore.CreativeModeTab.ModCreativeModeTabs;
 import com.themodone1.beastsofyore.entities.ModEntities;
 import com.themodone1.beastsofyore.item.ModItems;
 import com.themodone1.beastsofyore.LivyatanCore.Livyatan;
@@ -36,13 +37,21 @@ public class BeastsofYore {
         
     }
     public BeastsofYore(IEventBus modEventBus, ModContainer modContainer) {
-        ModSounds.register(modEventBus);
+
         modEventBus.addListener(this::commonSetup);
+
+        ModCreativeModeTabs.register(modEventBus);
+
+        ModSounds.register(modEventBus);
+
         ModEntities.ENTITIES.register(modEventBus);
+
         ModItems.register(modEventBus);
         
         NeoForge.EVENT_BUS.register(this);
+
         modEventBus.addListener(this::registerAttributes);
+
         modEventBus.addListener(this::addCreative);
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
@@ -56,19 +65,7 @@ public class BeastsofYore {
 
     // Add the example block item to the building blocks tab
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS){
-            event.accept(ModItems.MYSTERIOUS_TOOTH);
-            event.accept(ModItems.CONCRETION);
-            event.accept(ModItems.ARGENTAVIS_FEATHER);
-        }
-        if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS){
-            event.accept(ModItems.LIVYATAN_SPAWN_EGG);
-        }
-        if (event.getTabKey() == CreativeModeTabs.FOOD_AND_DRINKS){
-            event.accept(ModItems.LIVYATAN_MEAT);
-            event.accept(ModItems.COOKED_LIVYATAN_MEAT);
-            event.accept(ModItems.ARGENTAVIS_EGG);
-        }
+
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call

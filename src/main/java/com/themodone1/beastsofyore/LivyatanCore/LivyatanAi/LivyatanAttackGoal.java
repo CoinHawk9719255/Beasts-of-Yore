@@ -20,7 +20,7 @@ public class LivyatanAttackGoal extends Goal {
     private int timeSinceLastAttackAnimation = 0;
     private final Livyatan livyatan;
     private final double swimSpeed;
-    private static final float MAX_TURN_PER_TICK = 3.5F;
+    private static final float MAX_TURN_PER_TICK = 2.5F;
     private int attackCooldown = 0;
     private int attackAnimationTime = 0;
     private int timeTargetOutOfWater = 0;

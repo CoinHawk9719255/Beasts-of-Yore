@@ -8,6 +8,7 @@ import com.geckolib.animation.RawAnimation;
 import com.geckolib.animation.object.PlayState;
 import com.geckolib.animation.state.AnimationTest;
 import com.geckolib.util.GeckoLibUtil;
+import com.themodone1.beastsofyore.BeastsofYore;
 import com.themodone1.beastsofyore.LivyatanCore.LivyatanAi.LivyatanAttackGoal;
 import com.themodone1.beastsofyore.LivyatanCore.LivyatanAi.LivyatanYummyTargets;
 import com.themodone1.beastsofyore.sounds.ModSounds;
@@ -42,16 +43,18 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.neoforged.bus.api.SubscribeEvent;
 import org.jspecify.annotations.Nullable;
-
 
 
 public class Livyatan extends WaterAnimal implements GeoEntity {
 
+
+
     private int breachTimer = 0;
     private boolean hasStruken = false;
     private boolean happyTime = false;
-
+    public boolean ghoster = false;
     //public boolean hasAttemptedToUnderwhere = false;
     public void setBreachTimer(int t) {
         this.breachTimer = t;
@@ -106,6 +109,24 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
 
     }
 
+//    @Override
+//    public boolean canCollideWith(Entity entity) {
+//        if (this.ghoster){
+//            return false;
+//        }else{
+//            return true;
+//        }
+//    }
+//
+//    @Override
+//    public boolean isPushable() {
+//        if (this.ghoster){
+//            return false;
+//        }else{
+//            return true;
+//        }
+//    }
+
     @Override
     public void onAttack() {
         super.onAttack();
@@ -147,6 +168,7 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
 
 
     }
+
 
     @Override
     protected @Nullable SoundEvent getDeathSound() {
@@ -247,7 +269,7 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
         super.tick();
         lilyNoPadders();
         if (!level().isClientSide() && !isInWater()) {
-            System.out.println("noGravity=" + isNoGravity() + " onGround=" + onGround() + " vel=" + getDeltaMovement());
+            //System.out.println("noGravity=" + isNoGravity() + " onGround=" + onGround() + " vel=" + getDeltaMovement());
         }
         oneAfter = isInWater();
         WaterCrash crash_event = new WaterCrash(oneAfter, oneBefore, getX(), getY(), getZ());

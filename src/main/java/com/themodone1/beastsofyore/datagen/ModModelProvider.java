@@ -25,9 +25,10 @@ public class ModModelProvider extends ModelProvider {
         itemModels.generateFlatItem(ModItems.LIVYATAN_MEAT.get(),   ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.COOKED_LIVYATAN_MEAT.get(),ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.ARGENTAVIS_FEATHER.get(), ModelTemplates.FLAT_ITEM);
-        itemModels.generateFlatItem(ModItems.ARGENTAVIS_EGG.get(),  ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.ARGENTAVIS_EGG.get(),  ModelTemplates.FLAT_HANDHELD_ITEM);
         itemModels.generateFlatItem(ModItems.LIVYATAN_TOOTH.get(),   ModelTemplates.FLAT_ITEM);
-
+        itemModels.generateFlatItem(ModItems.LIVYATAN_DOOM.get(),   ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModels.generateFlatItem(ModItems.ECHOES_OF_THE_DEEP_MUSIC_DISC.get(),  ModelTemplates.FLAT_ITEM);
 
 
 

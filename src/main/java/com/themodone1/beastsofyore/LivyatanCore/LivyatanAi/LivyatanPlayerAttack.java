@@ -1,9 +1,12 @@
 package com.themodone1.beastsofyore.LivyatanCore.LivyatanAi;
 
 
+import com.themodone1.beastsofyore.BeastsofYore;
 import com.themodone1.beastsofyore.Config;
 import com.themodone1.beastsofyore.LivyatanCore.Livyatan;
+import com.themodone1.beastsofyore.sounds.LoopingSound;
 import com.themodone1.beastsofyore.sounds.ModSounds;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
@@ -12,13 +15,14 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.fml.common.Mod;
 import org.apache.commons.lang3.RandomUtils;
 
 import java.util.Objects;
 import java.util.OptionalInt;
-
 public class LivyatanPlayerAttack {
 
     boolean configDebug = Config.DEBUG_LOG_EXTRA.get();
@@ -71,14 +75,46 @@ public class LivyatanPlayerAttack {
     private boolean tailSwipeInProgress = false;
     private boolean claustrophobiaInProgress = false;
     private boolean screechInProgress = false;
+    private boolean playedMusic = false;
+    private int musicTimer = 0;
 
     public LivyatanPlayerAttack(Livyatan livyatan, double swimSpeed) {
         this.livyatan = livyatan;
         this.swimSpeed = swimSpeed;
     }
 
+    public void setPlayedMusic(boolean playedMusic) {
+        this.playedMusic = playedMusic;
+    }
+    private void playMusic() {
+
+        if (this.livyatan.level().isClientSide()) {
+        musicTimer--;
+        if (!playedMusic) {
+            if (this.livyatan.getTarget() == null) {
+                return;
+            }
+            Minecraft.getInstance().getSoundManager().play(new LoopingSound(this.livyatan.getTarget(), ModSounds.LIVYATAN_FIGHT.value()));
+            playedMusic = true;
+            musicTimer = 3420;
+        }
+        if (musicTimer <= 100) {
+
+        }
+        }
+    }
+//                       this.livyatan.level().playSound(null,
+//                                                               this.livyatan.getX(),
+//                                this.livyatan.getY(),
+//                                        this.livyatan.getZ(),
+//                                        ModSounds.LIVYATAN_SCREECH.value(),
+//    SoundSource.HOSTILE,1.2F,1.0F);
+
+
     public void tick(LivingEntity target) {
-        System.out.println("debug config option is"+configDebug);
+        playMusic();
+
+        BeastsofYore.LOGGER.debug("debug config option is {}", configDebug);
         if(configDebug) {
             boolean ST_TEMP = this.livyatan.hasEffect(MobEffects.STRENGTH);
             if (ST_TEMP) {
@@ -279,7 +315,7 @@ public class LivyatanPlayerAttack {
                     MobEffectInstance nausea = new MobEffectInstance(MobEffects.NAUSEA, nauseaTime, 255, true, false);
                     MobEffectInstance slowness = new MobEffectInstance(MobEffects.SLOWNESS, slownessTime, 4, true, false);
                     MobEffectInstance miningFatigue = new MobEffectInstance(MobEffects.MINING_FATIGUE, miningFatigueTime, 2, true, false);
-                   MobEffectInstance weakness = new MobEffectInstance(MobEffects.WEAKNESS, weaknessTime, 2, true, false);
+                   MobEffectInstance weakness = new MobEffectInstance(MobEffects.WEAKNESS, weaknessTime, 0, true, false);
                     //give player the effet
 
                     target.addEffect(nausea);
@@ -416,7 +452,7 @@ public class LivyatanPlayerAttack {
         // chargeTarget is fixed for the whole pass - this is what keeps it a straight line
         // instead of orbiting the player the way re-aiming at their live position would.
         swimToward(chargeTarget, CHARGE_SPEED_MULT, true, 180F, CHARGE_TURN_PER_TICK);
-
+        //this.livyatan.ghoster = true;
         if (!chargeHasHit && this.livyatan.distanceToSqr(target) <= CHARGE_HIT_RANGE_SQ) {
             if (this.livyatan.level() instanceof ServerLevel serverLevel) {
                 this.livyatan.doHurtTarget(serverLevel, target);
@@ -425,6 +461,7 @@ public class LivyatanPlayerAttack {
             }
            // chargeHasHit = true; // only one hit per pass, even though it phases on through
         }
+       // this.livyatan.ghoster = false;
 
         boolean arrived = this.livyatan.position().distanceToSqr(chargeTarget) < 9.0D;
         if (arrived || chargeTicks > MAX_CHARGE_TICKS) {

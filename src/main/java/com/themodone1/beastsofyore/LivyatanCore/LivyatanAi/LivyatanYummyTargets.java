@@ -10,13 +10,14 @@ import net.minecraft.world.phys.AABB;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.UUID;
 
 public class LivyatanYummyTargets extends TargetGoal {
     private final Livyatan livyatan;
     private final Class<?>[] priorityOrder;
     private final double range;
     private int findTargetCooldown = 0;
-    private ArrayList<LivingEntity> blacklist;
+    private ArrayList<UUID> blacklist = new ArrayList<>();
 
     public LivyatanYummyTargets(Livyatan livyatan, Class<?>[] priorityOrder, double range) {
         super(livyatan, false);
@@ -88,7 +89,9 @@ public class LivyatanYummyTargets extends TargetGoal {
     }
 
     private boolean isValidCandidate(LivingEntity e) {
-        if(blacklist.contains(e)){
+
+        UUID id_E = e.getUUID();
+        if( blacklist.contains(id_E)){
             return false;
         }
         if (e.isAlive() == false) {
@@ -105,34 +108,38 @@ public class LivyatanYummyTargets extends TargetGoal {
         }
         if(!checkIfCanAttack(e)){
 
-                blacklist.add(e);
+                blacklist.add(id_E);
 
             return false;
         }
+        blacklist.clear();
         return this.livyatan.getSensing().hasLineOfSight(e);
+
     }
     public boolean checkIfCanAttack(LivingEntity target) {
-        double player_X = this.livyatan.getTarget().getX();
-        double player_Y = this.livyatan.getTarget().getY();
-        double player_Z = this.livyatan.getTarget().getZ();
-
-        if (player_X == Double.NaN || player_Y == Double.NaN || player_Z == Double.NaN) {
-            this.livyatan.setTarget(null);
+        if (target == null) {
             return false;
         }
 
-        AABB largeEnough = this.livyatan.getTarget().getBoundingBox()
+
+        if (Double.isNaN(target.getX()) || Double.isNaN(target.getY()) || Double.isNaN(target.getZ())) {
+            return false;
+        }
+
+
+        AABB largeEnough = target.getBoundingBox()
                 .inflate(4.0, 2.0, 4.0);
 
-        boolean isFree = this.livyatan.getTarget().level().noCollision(this.livyatan.getTarget(),largeEnough);
-        return isFree;
-    }
+            boolean isFree = target.level().noCollision(largeEnough);
+            return isFree;
 
-    public ArrayList<LivingEntity> getBlacklist() {
+        }
+
+    public ArrayList<UUID> getBlacklist() {
         return blacklist;
     }
 
-    public void setBlacklist(ArrayList<LivingEntity> blacklist) {
+    public void setBlacklist(ArrayList<UUID> blacklist) {
         this.blacklist = blacklist;
     }
 }

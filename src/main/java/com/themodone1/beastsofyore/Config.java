@@ -1,5 +1,6 @@
 package com.themodone1.beastsofyore;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,6 +21,7 @@ public class Config {
     public static final ModConfigSpec.BooleanValue DEBUG_LOG_EXTRA = BUILDER
             .comment("Debugging and logging extras")
             .define("logAndDebugExtra", false);
+
 
     public static final ModConfigSpec.IntValue MAGIC_NUMBER = BUILDER
             .comment("A magic number")

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "group": "Beastsofyore Recipes",
+  "key": {
+    "S": "minecraft:stick",
+    "T": "beastsofyore:livyatan_tooth"
+  },
+  "pattern": [
+    "  T",
+    " S ",
+    "S  "
+  ],
+  "result": {
+    "id": "beastsofyore:livyatan_doom"
+  }
+}

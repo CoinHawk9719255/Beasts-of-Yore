@@ -9,6 +9,7 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.CookingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -41,6 +42,18 @@ public class ModRecipeProvider extends RecipeProvider {
 
     @Override
     protected void buildRecipes() {
+
+        shaped(RecipeCategory.COMBAT,ModItems.LIVYATAN_DOOM.get())
+                .pattern("  T")
+                .pattern(" S ")
+                .pattern("S  ")
+                .define('S', Ingredient.of(Items.STICK))
+                        .define('T', Ingredient.of(ModItems.LIVYATAN_TOOTH))
+                                .group("Beastsofyore Recipes")
+                .unlockedBy("has_livyatan_tooth",has(ModItems.LIVYATAN_TOOTH))
+                                        .save(output);
+
+
         SimpleCookingRecipeBuilder.smelting(
                 Ingredient.of(ModItems.LIVYATAN_MEAT),
                 RecipeCategory.FOOD,
