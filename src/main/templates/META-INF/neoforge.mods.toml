@@ -36,7 +36,7 @@ logoFile="logo.png" #optional
 credits="Themodone1" #optional
 
 # The authors of the mod, displayed in the mod UI (optional)
-authors="Themodone1, Fork lifter Pob, "
+authors="Themodone1, Maestro Pob, "
 
 # The description text for the mod (multi line!) (#mandatory)
 description='''
