@@ -22,7 +22,7 @@ public class ModEntities{
 
     public static final Supplier<EntityType<Livyatan>> LIVYATAN = ENTITIES.registerEntityType(
             "livyatan", Livyatan::new, MobCategory.WATER_CREATURE,
-            builder -> builder.sized(1.5f, 2.7f).clientTrackingRange(6)
+            builder -> builder.sized(3.2f, 2.7f).clientTrackingRange(6)
     );
     public static final Supplier<EntityType<ThrownLivyatanDoom>>
     THROWN_LIVYATAN_DOOM = ENTITIES.registerEntityType(

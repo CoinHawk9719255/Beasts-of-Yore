@@ -3,6 +3,9 @@
   "package": "com.themodone1.beastsofyore.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [],
+  "client": [
+    "EntityHitboxDebugRendererMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   },

@@ -100,6 +100,7 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
     private final LivyatanPart head;
     private final LivyatanPart body;
     private final LivyatanPart tail;
+    private final LivyatanPart tail_end;
 
 
 
@@ -169,10 +170,11 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
         super(entityType, level);
 
 
-        this.head = new LivyatanPart(this,"head",5.0F,5.0F);
-        this.body = new LivyatanPart(this,"body",5.0F,5.0F);
-        this.tail = new LivyatanPart(this,"tail",5.0F,5.0F);
-        this.subEntities = new LivyatanPart[]{this.head, this.body, this.tail};
+        this.head = new LivyatanPart(this,"head",3.2F,2.7F);
+        this.body = new LivyatanPart(this,"body",3.2F,2.7F);
+        this.tail = new LivyatanPart(this,"tail",3.2F,2.7F);
+        this.tail_end = new LivyatanPart(this, "tail_end", 2.0F,1);
+        this.subEntities = new LivyatanPart[]{this.head, this.body, this.tail, this.tail_end};
         this.setHealth(this.getMaxHealth());
         this.xpReward = 50;
         this.setId(ENTITY_COUNTER.getAndAdd(this.subEntities.length + 1) + 1);
@@ -325,9 +327,10 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
         for(int i = 0; i < this.subEntities.length; ++i) {
             oldPos[i] = new Vec3(this.subEntities[i].getX(), this.subEntities[i].getY(), this.subEntities[i].getZ());
         }
-        this.tickPart(this.head,  15.0, 0);
-        this.tickPart(this.body,  0.0, 0);
-        this.tickPart(this.tail, -15.0, 0);
+        this.tickPart(this.head,  6.5, 0,0);
+        this.tickPart(this.body,  3.2,0, 0);
+        this.tickPart(this.tail, -5.0, 0,0);
+        this.tickPart(this.tail_end,-8.0,2,2    );
 //        this.tickPart(this.body,0.0,0,0);
 //        this.tickPart(this.head,5.0,0,0);
 //        this.tickPart(this.tail,-5.0,0,0);
@@ -340,27 +343,28 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
             this.subEntities[i].yOld = oldPos[i].y;
             this.subEntities[i].zOld = oldPos[i].z;
         }
-        if (!level().isClientSide() && tickCount % 40 == 0) {
-            for (LivyatanPart p : subEntities) {
-                System.out.println(p.name + " pos=" + p.position() + " box=" + p.getBoundingBox());
-            }
-        }
-        if (level() instanceof ServerLevel sl && tickCount % 10 == 0) {
-            for (LivyatanPart p : subEntities) {
-                AABB b = p.getBoundingBox();
-                for (double x : new double[]{b.minX, b.maxX})
-                    for (double y : new double[]{b.minY, b.maxY})
-                        for (double z : new double[]{b.minZ, b.maxZ})
-                            sl.sendParticles(ParticleTypes.END_ROD, x, y, z, 1, 0, 0, 0, 0);
-            }
-        }
+//        if (!level().isClientSide() && tickCount % 40 == 0) {
+//            for (LivyatanPart p : subEntities) {
+//                System.out.println(p.name + " pos=" + p.position() + " box=" + p.getBoundingBox());
+//            }
+//        }
+//        if (level() instanceof ServerLevel sl && tickCount % 10 == 0) {
+//            for (LivyatanPart p : subEntities) {
+//                AABB b = p.getBoundingBox();
+//                for (double x : new double[]{b.minX, b.maxX})
+//                    for (double y : new double[]{b.minY, b.maxY})
+//                        for (double z : new double[]{b.minZ, b.maxZ})
+//                            sl.sendParticles(ParticleTypes.FLAME, x, y, z, 1, 0, 0, 0, 0);
+//            }
+//        }
     }
 
-    private void tickPart(LivyatanPart part, double forward, double yOffset) {
+    private void tickPart(LivyatanPart part, double forward, double side, double yOffset) {
         float yawRad = this.yBodyRot * Mth.DEG_TO_RAD;
-        // Minecraft's forward vector for a yaw is (-sin, cos)
-        double dx = -Mth.sin(yawRad) * forward;
-        double dz = Mth.cos(yawRad) * forward;
+        double sinY = Mth.sin(yawRad);
+        double cosY = Mth.cos(yawRad);
+        double dx = -sinY * forward + cosY * side;
+        double dz =  cosY * forward + sinY * side;
         part.setPos(this.getX() + dx, this.getY() + yOffset, this.getZ() + dz);
     }
     private void rotateTowardsTarget(LivingEntity target) {
@@ -419,7 +423,7 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
 
 
     }
-
+    @Override
     public boolean isMultipartEntity() {
         return true;
     }
@@ -429,6 +433,7 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
     public LivyatanPart[] getSubEntities() {
         return this.subEntities;
     }
+    @Override
     public PartEntity<?>[] getParts() {
         return this.subEntities;
     }
