@@ -3,6 +3,7 @@ package com.themodone1.beastsofyore.item;
 
 import com.themodone1.beastsofyore.BeastsofYore;
 import com.themodone1.beastsofyore.entities.ModEntities;
+import com.themodone1.beastsofyore.item.ingame.LivyatanDoomItem;
 import com.themodone1.beastsofyore.sounds.ModSounds;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.sounds.SoundEvents;
@@ -81,7 +82,7 @@ public class ModItems
                     )
     );
     public static final DeferredItem<Item> LIVYATAN_DOOM = ITEMS.registerItem("livyatan_doom",
-            properties -> new Item(properties.sword(
+            properties -> new LivyatanDoomItem(properties.sword(
                     ModToolTiers.LIVYTAN_TOOTH,7F,-1.0F))
 
     );

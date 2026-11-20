@@ -3,14 +3,16 @@ package com.themodone1.beastsofyore;
 import com.themodone1.beastsofyore.CreativeModeTab.ModCreativeModeTabs;
 import com.themodone1.beastsofyore.entities.ModEntities;
 import com.themodone1.beastsofyore.item.ModItems;
-import com.themodone1.beastsofyore.LivyatanCore.Livyatan;
+import com.themodone1.beastsofyore.entities.LivyatanCore.Livyatan;
+import com.themodone1.beastsofyore.renders.ThrownLivyatanDoomRenderer;
+import com.themodone1.beastsofyore.renders.models.ModModelLayers;
 import com.themodone1.beastsofyore.sounds.ModSounds;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
 
-import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;

@@ -4,6 +4,7 @@ import com.themodone1.beastsofyore.BeastsofYore;
 import com.themodone1.beastsofyore.sounds.ModSounds;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
+import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
 
 public class ModSoundsProvider extends SoundDefinitionsProvider {
@@ -32,10 +33,16 @@ public class ModSoundsProvider extends SoundDefinitionsProvider {
         add(ModSounds.LIVYATAN_FIGHT.value(),definition()
                 .subtitle("sounds.beastsofyore.livyatan_fight")
                 .with(sound(Identifier.fromNamespaceAndPath(BeastsofYore.MOD_ID,
-                        "livyatanfight"))
+                        "fat_ahh_whale_fight"))
                         .stream(true)
-                        .attenuationDistance(32))
-                );
+                        //.attenuationDistance(32)
+                        ));
+
+        add(ModSounds.PRE_LIVYATAN_FIGHT.value(),definition()
+                .subtitle("sounds.beastsofyore.pre_livyatan_fight")
+                .with(sound(Identifier.fromNamespaceAndPath(BeastsofYore.MOD_ID,
+                        "fat_ahh_whale_gonna_fight"))
+                ));
         add(ModSounds.ECHOES_OF_THE_DEEP.value(),definition().subtitle("sounds.beastsofyore_echoes_of_the_deep")
                 .with(sound(Identifier.fromNamespaceAndPath(BeastsofYore.MOD_ID,"echoes_of_the_deep")).stream()  ));
 

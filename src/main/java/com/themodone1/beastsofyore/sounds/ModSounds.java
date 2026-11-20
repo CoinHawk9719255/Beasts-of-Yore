@@ -43,9 +43,12 @@ public class ModSounds {
         );
         public static final Holder<SoundEvent> LIVYATAN_FIGHT = SOUND_EVENTS.register(
                 "livyatan_fight",
-                () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(BeastsofYore.MOD_ID,"livyatan_fight"))
+                () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(BeastsofYore.MOD_ID,"fat_ahh_whale_fight"))
+                        );
+        public static final Holder<SoundEvent> PRE_LIVYATAN_FIGHT = SOUND_EVENTS.register(
+                "pre_livyatan_fight",
+                ()-> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(BeastsofYore.MOD_ID,"fat_ahh_whale_gonna_fight"))
         );
-
 
 public static final DeferredHolder<SoundEvent,SoundEvent> ECHOES_OF_THE_DEEP = registerJukeboxSong("echoes_of_the_deep");
 public static final ResourceKey<JukeboxSong>  ECHOES_OF_THE_DEEP_KEY = createSong("echoes_of_the_deep");

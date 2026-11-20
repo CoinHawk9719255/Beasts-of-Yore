@@ -1,20 +1,20 @@
-package com.themodone1.beastsofyore.LivyatanCore;
+package com.themodone1.beastsofyore.entities.LivyatanCore;
 
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 
-public class WaterCrashNoCheck {
-  //  private boolean moment;
-    //private boolean oneBefore;
+public class WaterCrash {
+    private boolean moment;
+    private boolean oneBefore;
     private double LI_X;
     private double LI_Y;
     private double LI_Z;
    // private Livyatan livyatan;
 
-    public WaterCrashNoCheck( double LI_X, double LI_Y, double LI_Z) {
-//        this.moment = moment;
-//        this.oneBefore = oneBefore;
+    public WaterCrash(boolean moment, boolean oneBefore, double LI_X, double LI_Y, double LI_Z) {
+        this.moment = moment;
+        this.oneBefore = oneBefore;
         this.LI_X = LI_X;
         this.LI_Y = LI_Y;
         this.LI_Z = LI_Z;
@@ -24,7 +24,7 @@ public class WaterCrashNoCheck {
     // The logic lives HERE, inside the class
     public void update(Level level) {
         // It can access 'moment' directly because it is inside the class
-       // if (moment && !oneBefore) {
+        if (moment && !oneBefore) {
            // Level level = Minecraft.getInstance().level;
             //System.out.println("Calculating crash physics...");
 
@@ -78,10 +78,10 @@ public class WaterCrashNoCheck {
            // Level#addAlwaysVisibleParticle
             // Add your calculation logic here
             // Example: livyatan.dive();
-       // } else if (!moment && oneBefore) {
+        } else if (!moment && oneBefore) {
            // System.out.println("No crash moment.");
-        //}else{
+        }else{
 
         }
     }
-//}
+}

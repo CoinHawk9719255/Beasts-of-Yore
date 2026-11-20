@@ -1,10 +1,12 @@
 package com.themodone1.beastsofyore.entities;
 
 import com.themodone1.beastsofyore.BeastsofYore;
-import com.themodone1.beastsofyore.LivyatanCore.Livyatan;
+import com.themodone1.beastsofyore.entities.LivyatanCore.Livyatan;
+import com.themodone1.beastsofyore.entities.LivyatanDoom.ThrownLivyatanDoom;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
@@ -12,18 +14,28 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
 
-//@EventBusSubscriber(modid = BeastsofYore.MOD_ID)
-public class ModEntities
-{
-    private static final int MAX_LIVYATANS_NEARBY = 1;
-    private static final double CHECK_RADIUS = 64.0;
-    private static final int MAX_LIVYATANS_TOTAL = 3;
+
+public class ModEntities{
+
 
     public static final DeferredRegister.Entities ENTITIES = DeferredRegister.createEntities(BeastsofYore.MOD_ID);
 
     public static final Supplier<EntityType<Livyatan>> LIVYATAN = ENTITIES.registerEntityType(
             "livyatan", Livyatan::new, MobCategory.WATER_CREATURE,
-            builder -> builder.sized(15.5f, 2.7f).clientTrackingRange(6)
+            builder -> builder.sized(1.5f, 2.7f).clientTrackingRange(6)
+    );
+    public static final Supplier<EntityType<ThrownLivyatanDoom>>
+    THROWN_LIVYATAN_DOOM = ENTITIES.registerEntityType(
+            "thrown_livyatan_doom", ThrownLivyatanDoom::new, MobCategory.MISC,
+            builder -> builder.sized(
+                    0.5f, 0.5f)
+
+                    .clientTrackingRange(4)
+                    .eyeHeight(0.13F)
+                    .updateInterval(10)
+                    .canSpawnFarFromPlayer()
+                    .immuneTo(Blocks.WATER)
+
     );
 
     @SubscribeEvent
@@ -38,31 +50,12 @@ public class ModEntities
                         return false;
                     }
 
-                    //AABB checkArea = AABB.ofSize(Vec3.atCenterOf(blockPos), 64.0, 64.0, 64.0);
-                    //if (serverLevel.getEntitiesOfClass(Livyatan.class, checkArea).size() >= 2) {
-                    //    //System.out.println("yo theres too many here");
-                    //    return false;
-                    //}
-
                     return Mob.checkMobSpawnRules(entityType, serverLevelAccessor, entitySpawnReason, blockPos, randomSource)
                             && serverLevelAccessor.getFluidState(blockPos).is(FluidTags.WATER);
                 }),
                 RegisterSpawnPlacementsEvent.Operation.REPLACE
         );
     }
-
-    //@SubscribeEvent
-   // public static void onFinalizeSpawn(FinalizeSpawnEvent event) {
-     //   if (!(event.getEntity() instanceof Livyatan)) return;
-     //   if (event.getSpawnType() != EntitySpawnReason.NATURAL) return;
-      //  if (!(event.getLevel().getLevel() instanceof ServerLevel serverLevel)) return;
-
-      //  long count = serverLevel.getEntities(EntityTypeTest.forClass(Livyatan.class), AABB.INFINITE, entity ->  true).size();
-
-      //  if (count >= MAX_LIVYATANS_TOTAL) {
-      //      event.setSpawnCancelled(true);
-      //  }
-    //}
 }
 
 

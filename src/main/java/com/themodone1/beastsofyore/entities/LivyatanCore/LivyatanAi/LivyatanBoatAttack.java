@@ -1,11 +1,9 @@
-package com.themodone1.beastsofyore.LivyatanCore.LivyatanAi;
+package com.themodone1.beastsofyore.entities.LivyatanCore.LivyatanAi;
 
-import com.themodone1.beastsofyore.LivyatanCore.Livyatan;
-import com.themodone1.beastsofyore.LivyatanCore.WaterCrashNoCheck;
-import net.minecraft.client.resources.sounds.Sound;
+import com.themodone1.beastsofyore.entities.LivyatanCore.Livyatan;
+import com.themodone1.beastsofyore.entities.LivyatanCore.WaterCrashNoCheck;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -14,8 +12,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.data.SoundDefinition;
-import org.apache.commons.lang3.RandomUtils;
 
 import java.util.List;
 import java.util.Random;
@@ -39,7 +35,7 @@ public class LivyatanBoatAttack {
     private int waitTimer = 0;
     private boolean boatBiteQueued = false;
     private int boatBiteWindup = 0;
-    private static boolean breachedWater = false;
+   // private boolean breachedWater = false;
     //public static boolean hasStruken = false;
     private boolean hasAttemptedToUnderwhere = false;
 

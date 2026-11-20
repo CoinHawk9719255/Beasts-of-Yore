@@ -3,6 +3,8 @@ package com.themodone1.beastsofyore;
 import com.geckolib.renderer.GeoEntityRenderer;
 import com.themodone1.beastsofyore.client.model.LivyatanModel;
 import com.themodone1.beastsofyore.entities.ModEntities;
+import com.themodone1.beastsofyore.renders.ThrownLivyatanDoomRenderer;
+import com.themodone1.beastsofyore.renders.models.LivyatanDoomModel;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -36,5 +38,12 @@ public class BeastsofYoreClient {
     static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.LIVYATAN.get(),
                 context -> new GeoEntityRenderer<>(context, new LivyatanModel()));
-}
+        event.registerEntityRenderer(ModEntities.THROWN_LIVYATAN_DOOM.get(), ThrownLivyatanDoomRenderer::new);
+
+    }
+    @SubscribeEvent
+    public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(LivyatanDoomModel.LAYER, LivyatanDoomModel::createLayer);
+    }
+
 }

@@ -1,12 +1,13 @@
-package com.themodone1.beastsofyore.LivyatanCore.LivyatanAi;
+package com.themodone1.beastsofyore.entities.LivyatanCore.LivyatanAi;
 
 
 import com.themodone1.beastsofyore.BeastsofYore;
 import com.themodone1.beastsofyore.Config;
-import com.themodone1.beastsofyore.LivyatanCore.Livyatan;
-import com.themodone1.beastsofyore.sounds.LoopingSound;
+import com.themodone1.beastsofyore.entities.LivyatanCore.Livyatan;
+
+
 import com.themodone1.beastsofyore.sounds.ModSounds;
-import net.minecraft.client.Minecraft;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
@@ -15,10 +16,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.fml.common.Mod;
 import org.apache.commons.lang3.RandomUtils;
 
 import java.util.Objects;
@@ -83,26 +82,26 @@ public class LivyatanPlayerAttack {
         this.swimSpeed = swimSpeed;
     }
 
-    public void setPlayedMusic(boolean playedMusic) {
-        this.playedMusic = playedMusic;
-    }
-    private void playMusic() {
-
-        if (this.livyatan.level().isClientSide()) {
-        musicTimer--;
-        if (!playedMusic) {
-            if (this.livyatan.getTarget() == null) {
-                return;
-            }
-            Minecraft.getInstance().getSoundManager().play(new LoopingSound(this.livyatan.getTarget(), ModSounds.LIVYATAN_FIGHT.value()));
-            playedMusic = true;
-            musicTimer = 3420;
-        }
-        if (musicTimer <= 100) {
-
-        }
-        }
-    }
+   // public void setPlayedMusic(boolean playedMusic) {
+    //    this.playedMusic = playedMusic;
+    ////}
+//    private void playMusic() {
+//
+//        if (this.livyatan.level().isClientSide()) {
+//        musicTimer--;
+//        if (!playedMusic) {
+//            if (this.livyatan.getTarget() == null) {
+//                return;
+//            }
+//            Minecraft.getInstance().getSoundManager().play(new LoopingSound(this.livyatan.getTarget(), ModSounds.LIVYATAN_FIGHT.value()));
+//            playedMusic = true;
+//            musicTimer = 3420;
+//        }
+//        if (musicTimer <= 100) {
+//
+//        }
+//        }
+//    }
 //                       this.livyatan.level().playSound(null,
 //                                                               this.livyatan.getX(),
 //                                this.livyatan.getY(),
@@ -112,18 +111,18 @@ public class LivyatanPlayerAttack {
 
 
     public void tick(LivingEntity target) {
-        playMusic();
+        //playMusic();
 
-        BeastsofYore.LOGGER.debug("debug config option is {}", configDebug);
+       // BeastsofYore.LOGGER.debug("debug config option is {}", configDebug);
         if(configDebug) {
             boolean ST_TEMP = this.livyatan.hasEffect(MobEffects.STRENGTH);
             if (ST_TEMP) {
                 OptionalInt SI_TEMP = OptionalInt.of(Objects.requireNonNull(this.livyatan.getEffect(MobEffects.STRENGTH)).getDuration());
                 OptionalInt SL_TEMP = OptionalInt.of(Objects.requireNonNull(this.livyatan.getEffect(MobEffects.STRENGTH)).getAmplifier());
-                System.out.println("Strenght current effect and ampiflier");
-                System.out.println(SI_TEMP);
-                System.out.println(SL_TEMP);
-                System.out.println("End of logging broski macorani");
+                BeastsofYore.LOGGER.debug("Strenght current effect and ampiflier");
+                BeastsofYore.LOGGER.debug(SI_TEMP.toString());
+                BeastsofYore.LOGGER.debug(SL_TEMP.toString());
+                BeastsofYore.LOGGER.debug("End of logging broski macorani");
             }
         }
         if (target == null){
@@ -322,7 +321,7 @@ public class LivyatanPlayerAttack {
                     target.addEffect(slowness);
                     target.addEffect(miningFatigue);
                     target.addEffect(weakness);
-                    System.out.println("Screeching");
+                    //System.out.println("Screeching");
                     if(configDebug){
                         this.livyatan.level().playSound(null,
                                 this.livyatan.getX(),
@@ -366,12 +365,12 @@ public class LivyatanPlayerAttack {
     }
     /** phase 2 of the tail swipe: turn around, swim to the retreat point, then go back to charging */
     public void tacticChanger(){
-        System.out.println("tacticChanger" + attackTimes);
+        //System.out.println("tacticChanger" + attackTimes);
 
         if (attackTimes <= 0){
             chooseTimeForHappy = true;
             if (chooseTimeForHappy) {
-                System.out.println("changing tacits");
+              //  System.out.println("changing tacits");
                 whichHappyShall_I_= RandomUtils.nextInt(0, 5);
                 happyTimePhase = HappyTime.values()[whichHappyShall_I_];
                 chooseTimeForHappy = false;
@@ -383,8 +382,8 @@ public class LivyatanPlayerAttack {
                 else{
                     attackTimes = RandomUtils.nextInt(1, 3);
                 }
-                System.out.println("attack type" + happyTimePhase);
-                System.out.println("attack times for this new attack type" + attackTimes);
+                //System.out.println("attack type" + happyTimePhase);
+              //  System.out.println("attack times for this new attack type" + attackTimes);
             }
 
         }

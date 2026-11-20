@@ -1,6 +1,6 @@
-package com.themodone1.beastsofyore.LivyatanCore.LivyatanAi;
+package com.themodone1.beastsofyore.entities.LivyatanCore.LivyatanAi;
 
-import com.themodone1.beastsofyore.LivyatanCore.Livyatan;
+import com.themodone1.beastsofyore.entities.LivyatanCore.Livyatan;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
