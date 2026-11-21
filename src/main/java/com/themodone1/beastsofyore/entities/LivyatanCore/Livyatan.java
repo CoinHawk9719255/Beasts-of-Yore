@@ -293,7 +293,15 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
                        60,"Watery Grave");
            }
         }else{
-            this.entityData.set(DATA_IN_COMBAT, getTarget() != null && isAlive()&& getTarget() instanceof Player || getBoatTarget() instanceof AbstractBoat && getBoatTarget().getPassengers().contains(Player.class));
+            @Nullable boolean temp = false;
+            if(getBoatTarget() != null && getBoatTarget().getPassengers() != null && !getBoatTarget().getPassengers().isEmpty()){
+
+                temp = getBoatTarget().getPassengers().stream().anyMatch(player -> player instanceof Player);
+              //  System.out.println("boat cehcker tmep variable" +temp);
+            }
+            this.entityData.set(DATA_IN_COMBAT, getTarget() != null && isAlive()&& getTarget() instanceof Player || temp);
+            //System.out.println("is in combatt???"+ isInCombat());
+
         }
         super.tick();
 

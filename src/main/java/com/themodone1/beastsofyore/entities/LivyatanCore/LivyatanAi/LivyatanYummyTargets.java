@@ -19,6 +19,7 @@ public class LivyatanYummyTargets extends TargetGoal {
     private int findTargetCooldown = 0;
     private ArrayList<UUID> blacklist = new ArrayList<>();
 
+
     public LivyatanYummyTargets(Livyatan livyatan, Class<?>[] priorityOrder, double range) {
         super(livyatan, false);
         this.livyatan = livyatan;

@@ -308,7 +308,7 @@ public class LivyatanPlayerAttack {
                     }
                     nauseaTime +=200;
                     slownessTime +=400;
-                    miningFatigueTime +=400;
+                    miningFatigueTime +=300;
                     weaknessTime += 200;
 
                     MobEffectInstance nausea = new MobEffectInstance(MobEffects.NAUSEA, nauseaTime, 255, true, false);
