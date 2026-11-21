@@ -128,7 +128,7 @@ public class LivyatanYummyTargets extends TargetGoal {
 
 
         AABB largeEnough = target.getBoundingBox()
-                .inflate(4.0, 2.0, 4.0);
+                .inflate(3, 3, 3);
 
             boolean isFree = target.level().noCollision(largeEnough);
             return isFree;

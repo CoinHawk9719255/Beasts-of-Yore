@@ -22,7 +22,11 @@ public class ModEntities{
 
     public static final Supplier<EntityType<Livyatan>> LIVYATAN = ENTITIES.registerEntityType(
             "livyatan", Livyatan::new, MobCategory.WATER_CREATURE,
-            builder -> builder.sized(3.2f, 2.7f).clientTrackingRange(6)
+            builder -> builder.sized(3.2f, 2.7f)
+                    .clientTrackingRange(6)
+                    .canSpawnFarFromPlayer()
+                    .immuneTo(Blocks.WATER)
+
     );
     public static final Supplier<EntityType<ThrownLivyatanDoom>>
     THROWN_LIVYATAN_DOOM = ENTITIES.registerEntityType(
@@ -33,8 +37,8 @@ public class ModEntities{
                     .clientTrackingRange(4)
                     .eyeHeight(0.13F)
                     .updateInterval(10)
-                    .canSpawnFarFromPlayer()
-                    .immuneTo(Blocks.WATER)
+
+
 
     );
 

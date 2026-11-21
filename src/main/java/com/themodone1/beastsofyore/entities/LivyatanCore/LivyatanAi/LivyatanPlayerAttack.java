@@ -519,7 +519,7 @@ public class LivyatanPlayerAttack {
             Vec3 forward = Vec3.directionFromRotation(this.livyatan.getXRot(), this.livyatan.getYRot());
             Vec3 movement = forward.scale(this.swimSpeed * 0.05D * speedMult);
 
-            double verticalAssist = Mth.clamp(dy * 0.002D, -0.10D, 0.10D);
+            double verticalAssist = Mth.clamp(dy * 0.002D, -0.10D, 0.30D);
             movement = movement.add(0, verticalAssist, 0);
 
             this.livyatan.setDeltaMovement(this.livyatan.getDeltaMovement().add(movement));

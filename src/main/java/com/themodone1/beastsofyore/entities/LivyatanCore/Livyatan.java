@@ -13,9 +13,9 @@ import com.themodone1.beastsofyore.entities.LivyatanCore.LivyatanAi.LivyatanYumm
 import com.themodone1.beastsofyore.sounds.ClientBossMusic;
 
 import com.themodone1.beastsofyore.sounds.ModSounds;
-import net.minecraft.client.Minecraft;
+
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
+
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -101,6 +101,9 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
     private final LivyatanPart body;
     private final LivyatanPart tail;
     private final LivyatanPart tail_end;
+    private final LivyatanPart tail_end_left;
+    private final LivyatanPart tail_end_right;
+    private final LivyatanPart tail2;
 
 
 
@@ -172,12 +175,17 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
 
         this.head = new LivyatanPart(this,"head",3.2F,2.7F);
         this.body = new LivyatanPart(this,"body",3.2F,2.7F);
-        this.tail = new LivyatanPart(this,"tail",3.2F,2.7F);
-        this.tail_end = new LivyatanPart(this, "tail_end", 2.0F,1);
-        this.subEntities = new LivyatanPart[]{this.head, this.body, this.tail, this.tail_end};
+        this.tail = new LivyatanPart(this,"tail",3.2F,2.3F);
+        this.tail_end_left = new LivyatanPart(this, "tail_end_left", 2.0F,1);
+        this.tail_end_right = new LivyatanPart(this, "tail_end_right", 2.0F,1);
+        this.tail_end = new LivyatanPart(this, "tail_end_middle", 2.0F,1);
+        this.tail2 = new LivyatanPart(this,"tail_2",2.2F,1.7F);
+        this.subEntities = new LivyatanPart[]{this.head, this.body, this.tail, this.tail_end,
+                this.tail_end_left,this.tail_end_right, this.tail2};
         this.setHealth(this.getMaxHealth());
         this.xpReward = 50;
         this.setId(ENTITY_COUNTER.getAndAdd(this.subEntities.length + 1) + 1);
+        this.setAirSupply(preTickAirSupply);
 
 
     }
@@ -191,6 +199,8 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
 
     }
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
+
+
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
@@ -278,12 +288,12 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
 
         if (level().isClientSide()) {
            if(isInCombat() && isAlive()){
+
                ClientBossMusic.request(this, ModSounds.LIVYATAN_FIGHT.value(), 64.0,
-                       60,"Watery Grave",
-                       280);
+                       60,"Watery Grave");
            }
         }else{
-            this.entityData.set(DATA_IN_COMBAT, getTarget() != null && isAlive()&& getTarget() instanceof Player || getBoatTarget() instanceof AbstractBoat);
+            this.entityData.set(DATA_IN_COMBAT, getTarget() != null && isAlive()&& getTarget() instanceof Player || getBoatTarget() instanceof AbstractBoat && getBoatTarget().getPassengers().contains(Player.class));
         }
         super.tick();
 
@@ -301,6 +311,9 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
     }
 
     private static final float maxTurnPerTickForLivyatanMaybe_I_ShouldMakeTheseVariableNamesLessFlipFloppity = 2.5F;
+
+
+
 
     @Override
     public void aiStep() {
@@ -329,10 +342,13 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
         }
         this.tickPart(this.head,  6.5, 0,0);
         this.tickPart(this.body,  3.2,0, 0);
-        this.tickPart(this.tail, -5.0, 0,0);
-        this.tickPart(this.tail_end,-8.0,2,2    );
+        this.tickPart(this.tail, -3.2, 0,0);
+        this.tickPart(this.tail_end,-8.0,0,1.8F);
+        this.tickPart(this.tail_end_right,-9.0,-2,1.8F);
+        this.tickPart(this.tail_end_left,-9.0,2,1.8F);
+        this.tickPart(this.tail2, -6.0,0,1);
 //        this.tickPart(this.body,0.0,0,0);
-//        this.tickPart(this.head,5.0,0,0);
+//        this.tickPart(this.head,5.0,0,0);1
 //        this.tickPart(this.tail,-5.0,0,0);
 
         for(int i = 0; i < this.subEntities.length; ++i) {
@@ -444,5 +460,6 @@ public class Livyatan extends WaterAnimal implements GeoEntity {
         }
         return false;
     }
+
 }
 

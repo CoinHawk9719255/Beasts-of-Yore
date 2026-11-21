@@ -75,4 +75,8 @@ public class LivyatanPart extends PartEntity<Livyatan> {
         return false;
     }
 
+    @Override
+    public boolean canCollideWith(Entity entity) {
+        return super.canCollideWith(entity);
+    }
 }
